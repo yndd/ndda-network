@@ -1,0 +1,8 @@
+apiVersion: pkg.ndd.yndd.io/v1
+kind: Intent
+metadata:
+  name: ndda-network
+  namespace: ndd-system
+spec:
+  package: yndd/ndda-adaptor-network:latest
+  packagePullPolicy: Always
