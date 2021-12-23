@@ -6,20 +6,20 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.4.1
   creationTimestamp: null
-  name: interfaces.network.ndda.yndd.io
+  name: subinterfaces.network.ndda.yndd.io
 spec:
   group: network.ndda.yndd.io
   names:
-    kind: Interface
-    listKind: InterfaceList
-    plural: interfaces
-    singular: interface
+    kind: SubInterface
+    listKind: SubInterfaceList
+    plural: subinterfaces
+    singular: subinterface
   scope: Namespaced
   versions:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Interface is the Schema for the Interface API
+        description: SubInterface is the Schema for the SubInterface API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -34,36 +34,42 @@ spec:
           metadata:
             type: object
           spec:
-            description: A InterfaceSpec defines the desired state of a Interface.
+            description: A SubInterfaceSpec defines the desired state of a SubInterface.
             properties:
-              endpoint-group:
+              interface-name:
                 type: string
-              interface:
-                description: Interface struct
-                properties:
-                  kind:
-                    type: string
-                  lacp:
-                    type: boolean
-                  lacp-fallback:
-                    type: boolean
-                  lag:
-                    type: boolean
-                  lag-member:
-                    type: boolean
-                  lag-name:
-                    type: string
-                  name:
-                    type: string
-                type: object
               node-name:
                 type: string
+              sub-interface:
+                description: EndpointGroup *string              `json:"endpoint-group,omitempty"`
+                properties:
+                  index:
+                    type: string
+                  inner-tag:
+                    format: int32
+                    type: integer
+                  ipv4:
+                    items:
+                      type: string
+                    type: array
+                  ipv6:
+                    items:
+                      type: string
+                    type: array
+                  kind:
+                    type: string
+                  outer-tag:
+                    format: int32
+                    type: integer
+                  tagging:
+                    type: string
+                type: object
               topology-name:
                 description: nddv1.ResourceSpec `json:",inline"`
                 type: string
             type: object
           status:
-            description: A InterfaceStatus represents the observed state of a InterfaceSpec.
+            description: A SubInterfaceStatus represents the observed state of a SubInterfaceSpec.
             properties:
               conditions:
                 description: Conditions of the resource.

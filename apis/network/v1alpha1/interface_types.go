@@ -29,8 +29,6 @@ const (
 	// Interface structure to block delete operations until the physical node can be
 	// deprovisioned.
 	InterfaceFinalizer string = "interface.network.ndda.yndd.io"
-
-	LabelInterfaceKindKey = "ndda-itfce-kind"
 )
 
 // Interface struct
@@ -50,7 +48,7 @@ type InterfaceSpec struct {
 	TopologyName  *string           `json:"topology-name,omitempty"`
 	NodeName      *string           `json:"node-name,omitempty"`
 	EndpointGroup *string           `json:"endpoint-group,omitempty"`
-	Interface     *NetworkInterface `json:"Interface,omitempty"`
+	Interface     *NetworkInterface `json:"interface,omitempty"`
 }
 
 // A InterfaceStatus represents the observed state of a InterfaceSpec.

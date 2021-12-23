@@ -85,7 +85,7 @@ docker-push: ## Push docker image with the manager.
 	docker push ${IMG}
 
 package-build: ## build ndd package.
-	rm -rf package/nddo*
+	rm -rf package/ndda*
 	cd package;kubectl ndd package build -t intent;cd ..
 
 package-push: ## build ndd package.

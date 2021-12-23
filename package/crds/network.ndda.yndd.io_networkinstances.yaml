@@ -6,20 +6,20 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.4.1
   creationTimestamp: null
-  name: interfaces.network.ndda.yndd.io
+  name: networkinstances.network.ndda.yndd.io
 spec:
   group: network.ndda.yndd.io
   names:
-    kind: Interface
-    listKind: InterfaceList
-    plural: interfaces
-    singular: interface
+    kind: NetworkInstance
+    listKind: NetworkInstanceList
+    plural: networkinstances
+    singular: networkinstance
   scope: Namespaced
   versions:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Interface is the Schema for the Interface API
+        description: NetworkInstance is the Schema for the NetworkInstance API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -34,24 +34,21 @@ spec:
           metadata:
             type: object
           spec:
-            description: A InterfaceSpec defines the desired state of a Interface.
+            description: A NetworkInstanceSpec defines the desired state of a NetworkInstance.
             properties:
-              endpoint-group:
-                type: string
-              interface:
-                description: Interface struct
+              network-instance:
+                description: EndpointGroup *string              `json:"endpoint-group,omitempty"`
                 properties:
+                  interface:
+                    items:
+                      properties:
+                        kind:
+                          type: string
+                        name:
+                          type: string
+                      type: object
+                    type: array
                   kind:
-                    type: string
-                  lacp:
-                    type: boolean
-                  lacp-fallback:
-                    type: boolean
-                  lag:
-                    type: boolean
-                  lag-member:
-                    type: boolean
-                  lag-name:
                     type: string
                   name:
                     type: string
@@ -63,7 +60,8 @@ spec:
                 type: string
             type: object
           status:
-            description: A InterfaceStatus represents the observed state of a InterfaceSpec.
+            description: A NetworkInstanceStatus represents the observed state of
+              a NetworkInstanceSpec.
             properties:
               conditions:
                 description: Conditions of the resource.
