@@ -29,6 +29,8 @@ const (
 	// Interface structure to block delete operations until the physical node can be
 	// deprovisioned.
 	InterfaceFinalizer string = "interface.network.ndda.yndd.io"
+
+	LabelInterfaceKindKey = "ndda-itfce-kind"
 )
 
 // Interface struct
