@@ -57,6 +57,7 @@ type If interface {
 	GetEndpointGroup() string
 
 	GetInterfaceName() string
+	GetKind() string
 	GetLag() bool
 	GetLagMember() bool
 	GetLagName() string
@@ -110,6 +111,13 @@ func (x *Interface) GetInterfaceName() string {
 		return ""
 	}
 	return *x.Spec.Interface.Name
+}
+
+func (x *Interface) GetKind() string {
+	if reflect.ValueOf(x.Spec.Interface.Kind).IsZero() {
+		return ""
+	}
+	return *x.Spec.Interface.Kind
 }
 
 func (x *Interface) GetLag() bool {

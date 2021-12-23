@@ -34,6 +34,7 @@ const (
 // Interface struct
 type NetworkInterface struct {
 	Name         *string `json:"name,omitempty"`
+	Kind         *string `json:"kind,omitempty"`
 	Lag          *bool   `json:"lag,omitempty"`
 	LagMember    *bool   `json:"lag-member,omitempty"`
 	LagName      *string `json:"lag-name,omitempty"`
