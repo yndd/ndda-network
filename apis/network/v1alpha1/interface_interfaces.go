@@ -21,7 +21,26 @@ import (
 
 	nddv1 "github.com/yndd/ndd-runtime/apis/common/v1"
 	"github.com/yndd/ndd-runtime/pkg/resource"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
+
+var _ IfList = &InterfaceList{}
+
+// +k8s:deepcopy-gen=false
+type IfList interface {
+	client.ObjectList
+
+	GetInterfaces() []If
+}
+
+func (x *InterfaceList) GetInterfaces() []If {
+	xs := make([]If, len(x.Items))
+	for i, r := range x.Items {
+		r := r // Pin range variable so we can take its address.
+		xs[i] = &r
+	}
+	return xs
+}
 
 var _ If = &Interface{}
 
