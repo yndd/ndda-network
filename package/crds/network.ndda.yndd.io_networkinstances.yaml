@@ -37,7 +37,7 @@ spec:
             description: A NetworkInstanceSpec defines the desired state of a NetworkInstance.
             properties:
               network-instance:
-                description: EndpointGroup *string              `json:"endpoint-group,omitempty"`
+                description: NetworkNetworkInstance struct
                 properties:
                   interface:
                     items:

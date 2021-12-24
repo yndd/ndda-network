@@ -1,3 +1,19 @@
+/*
+Copyright 2021 NDD.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package v1alpha1
 
 import (
@@ -39,9 +55,8 @@ type Ni interface {
 	GetTopologyName() string
 	GetNodeName() string
 
-	GetName() string
+	GetNetworkInstanceName() string
 	GetKind() string
-	//GetInterfaces() []*NetworkNetworkInstanceInterface
 	GetInterfaces() map[string]string
 }
 
@@ -79,7 +94,7 @@ func (x *NetworkInstance) GetNodeName() string {
 	return *x.Spec.NodeName
 }
 
-func (x *NetworkInstance) GetName() string {
+func (x *NetworkInstance) GetNetworkInstanceName() string {
 	if reflect.ValueOf(x.Spec.NetworkInstance.Name).IsZero() {
 		return ""
 	}
@@ -92,16 +107,6 @@ func (x *NetworkInstance) GetKind() string {
 	}
 	return *x.Spec.NetworkInstance.Kind
 }
-
-/*
-func (x *NetworkInstance) GetInterfaces() []*NetworkNetworkInstanceInterface {
-	i := make([]*NetworkNetworkInstanceInterface, 0)
-	if reflect.ValueOf(x.Spec.NetworkInstance.Interface).IsZero() {
-		return i
-	}
-	return x.Spec.NetworkInstance.Interface
-}
-*/
 
 func (x *NetworkInstance) GetInterfaces() map[string]string {
 	i := make(map[string]string)

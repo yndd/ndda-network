@@ -28,7 +28,7 @@ const (
 	// NetworkInstanceFinalizer is the name of the finalizer added to
 	// NetworkInstance structure to block delete operations until the physical node can be
 	// deprovisioned.
-	NetworkInstanceFinalizer string = "NetworkInstance.network.ndda.yndd.io"
+	NetworkInstanceFinalizer string = "networkinstance.network.ndda.yndd.io"
 
 	LabelNetworkInstanceKindKey = "ndda-network-instance-kind"
 )
@@ -48,9 +48,8 @@ type NetworkNetworkInstanceInterface struct {
 // A NetworkInstanceSpec defines the desired state of a NetworkInstance.
 type NetworkInstanceSpec struct {
 	//nddv1.ResourceSpec `json:",inline"`
-	TopologyName *string `json:"topology-name,omitempty"`
-	NodeName     *string `json:"node-name,omitempty"`
-	//EndpointGroup *string              `json:"endpoint-group,omitempty"`
+	TopologyName    *string                 `json:"topology-name,omitempty"`
+	NodeName        *string                 `json:"node-name,omitempty"`
 	NetworkInstance *NetworkNetworkInstance `json:"network-instance,omitempty"`
 }
 

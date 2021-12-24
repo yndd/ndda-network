@@ -57,7 +57,7 @@ type Si interface {
 	//GetEndpointGroup() string
 	GetInterfaceName() string
 
-	GetIndex() string
+	GetSubInterfaceIndex() string
 	GetKind() string
 	GetTagging() string
 	GetOuterTag() uint32
@@ -107,7 +107,7 @@ func (x *SubInterface) GetInterfaceName() string {
 	return *x.Spec.InterfaceName
 }
 
-func (x *SubInterface) GetIndex() string {
+func (x *SubInterface) GetSubInterfaceIndex() string {
 	if reflect.ValueOf(x.Spec.SubInterface.Index).IsZero() {
 		return ""
 	}
