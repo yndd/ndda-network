@@ -17,7 +17,7 @@ limitations under the License.
 package v1alpha1
 
 const (
-	LabelNddaKind            string = "ndda-kind"
+	LabelNddaOwner           string = "ndda-owner" // represensted as org.depl.az.nddokind.crname
 	LabelNddaNode            string = "ndda-node"
 	LabelNddaItfce           string = "ndda-interface"
 	LabelNddaSubInterface    string = "ndda-subinterface"
