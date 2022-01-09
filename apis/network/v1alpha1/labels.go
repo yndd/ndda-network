@@ -18,9 +18,12 @@ package v1alpha1
 
 const (
 	LabelNddaDeploymentPolicy string = "ndda-deployment-policy" // planned or active
-	LabelNddaOwner           string = "ndda-owner" // represented as org.depl.az.nddokind.crname
-	LabelNddaNode            string = "ndda-node"
-	LabelNddaItfce           string = "ndda-interface"
-	LabelNddaSubInterface    string = "ndda-subinterface"
-	LabelNddaNetworkInstance string = "ndda-network-instance"
+	LabelNddaOwner            string = "ndda-owner"             // represented as org.depl.az.nddokind.crname
+	LabelNddaNode             string = "ndda-node"
+	LabelNddaItfce            string = "ndda-interface"
+	LabelNddaSubInterface     string = "ndda-subinterface"
+	LabelNddaNetworkInstance  string = "ndda-network-instance"
+	LabelNddaOrganization     string = "ndda-organization"
+	LabelNddaDeployment       string = "ndda-deployment"
+	LabelNddaAvailabilityZone string = "ndda-availability-zone"
 )
