@@ -6,20 +6,30 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.4.1
   creationTimestamp: null
-  name: networkinstances.network.ndda.yndd.io
+  name: nddasystemplatforms.ndda.ndda.yndd.io
 spec:
-  group: network.ndda.yndd.io
+  group: ndda.ndda.yndd.io
   names:
-    kind: NetworkInstance
-    listKind: NetworkInstanceList
-    plural: networkinstances
-    singular: networkinstance
+    kind: NddaSystemPlatform
+    listKind: NddaSystemPlatformList
+    plural: nddasystemplatforms
+    singular: nddasystemplatform
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - jsonPath: .status.conditions[?(@.kind=='Ready')].status
+      name: STATUS
+      type: string
+    - jsonPath: .status.conditions[?(@.kind=='Synced')].status
+      name: SYNC
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: AGE
+      type: date
+    name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: NetworkInstance is the Schema for the NetworkInstance API
+        description: NddaSystemPlatform is the Schema for the SystemPlatform API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -34,34 +44,35 @@ spec:
           metadata:
             type: object
           spec:
-            description: A NetworkInstanceSpec defines the desired state of a NetworkInstance.
+            description: A SystemPlatformSpec defines the desired state of a SystemPlatform.
             properties:
-              network-instance:
-                description: NetworkNetworkInstance struct
+              platform:
+                description: SystemPlatform struct
                 properties:
-                  interface:
-                    items:
-                      properties:
-                        kind:
-                          type: string
-                        name:
-                          type: string
-                      type: object
-                    type: array
-                  kind:
-                    type: string
-                  name:
-                    type: string
+                  config:
+                    description: SystemPlatformConfig struct
+                    properties:
+                      index:
+                        description: kubebuilder:validation:Minimum=1 kubebuilder:validation:Maximum=4294967295
+                        format: int32
+                        type: integer
+                      kind:
+                        enum:
+                        - SRL
+                        - SROS
+                        type: string
+                      name:
+                        description: kubebuilder:validation:MinLength=1 kubebuilder:validation:MaxLength=255
+                        pattern: '[A-Za-z0-9 !@#$^&()|+=`~.,''/_:;?-]*'
+                        type: string
+                      version:
+                        type: string
+                    type: object
                 type: object
-              node-name:
-                type: string
-              topology-name:
-                description: nddv1.ResourceSpec `json:",inline"`
-                type: string
             type: object
           status:
-            description: A NetworkInstanceStatus represents the observed state of
-              a NetworkInstanceSpec.
+            description: A SystemPlatformStatus represents the observed state of a
+              SystemPlatform.
             properties:
               conditions:
                 description: Conditions of the resource.
@@ -96,15 +107,6 @@ spec:
                   - status
                   type: object
                 type: array
-              controllerRef:
-                description: A Reference to a named object.
-                properties:
-                  name:
-                    description: Name of the referenced object.
-                    type: string
-                required:
-                - name
-                type: object
             type: object
         type: object
     served: true

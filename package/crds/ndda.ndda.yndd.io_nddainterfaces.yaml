@@ -6,20 +6,30 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.4.1
   creationTimestamp: null
-  name: networkinstances.network.ndda.yndd.io
+  name: nddainterfaces.ndda.ndda.yndd.io
 spec:
-  group: network.ndda.yndd.io
+  group: ndda.ndda.yndd.io
   names:
-    kind: NetworkInstance
-    listKind: NetworkInstanceList
-    plural: networkinstances
-    singular: networkinstance
+    kind: NddaInterface
+    listKind: NddaInterfaceList
+    plural: nddainterfaces
+    singular: nddainterface
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - jsonPath: .status.conditions[?(@.kind=='Ready')].status
+      name: STATUS
+      type: string
+    - jsonPath: .status.conditions[?(@.kind=='Synced')].status
+      name: SYNC
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: AGE
+      type: date
+    name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: NetworkInstance is the Schema for the NetworkInstance API
+        description: NddaInterface is the Schema for the Interface API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -34,34 +44,47 @@ spec:
           metadata:
             type: object
           spec:
-            description: A NetworkInstanceSpec defines the desired state of a NetworkInstance.
+            description: A InterfaceSpec defines the desired state of a Interface.
             properties:
-              network-instance:
-                description: NetworkNetworkInstance struct
+              interface:
+                description: Interface struct
                 properties:
-                  interface:
-                    items:
-                      properties:
-                        kind:
-                          type: string
-                        name:
-                          type: string
-                      type: object
-                    type: array
-                  kind:
-                    type: string
+                  config:
+                    description: InterfaceConfig struct
+                    properties:
+                      kind:
+                        enum:
+                        - INTERFACE
+                        - IRB
+                        - LOOPBACK
+                        - MPLS
+                        - VXLAN
+                        type: string
+                      lacp:
+                        type: boolean
+                      lacp-fallback:
+                        type: boolean
+                      lag:
+                        type: boolean
+                      lag-member:
+                        type: boolean
+                      lag-name:
+                        description: kubebuilder:validation:MinLength=1 kubebuilder:validation:MaxLength=255
+                        pattern: '[A-Za-z0-9 !@#$^&()|+=`~.,''/_:;?-]*'
+                        type: string
+                      name:
+                        description: kubebuilder:validation:MinLength=1 kubebuilder:validation:MaxLength=255
+                        pattern: '[A-Za-z0-9 !@#$^&()|+=`~.,''/_:;?-]*'
+                        type: string
+                    type: object
                   name:
                     type: string
+                required:
+                - name
                 type: object
-              node-name:
-                type: string
-              topology-name:
-                description: nddv1.ResourceSpec `json:",inline"`
-                type: string
             type: object
           status:
-            description: A NetworkInstanceStatus represents the observed state of
-              a NetworkInstanceSpec.
+            description: A InterfaceStatus represents the observed state of a Interface.
             properties:
               conditions:
                 description: Conditions of the resource.
@@ -96,15 +119,6 @@ spec:
                   - status
                   type: object
                 type: array
-              controllerRef:
-                description: A Reference to a named object.
-                properties:
-                  name:
-                    description: Name of the referenced object.
-                    type: string
-                required:
-                - name
-                type: object
             type: object
         type: object
     served: true

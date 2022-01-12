@@ -1,5 +1,5 @@
 version: "1"
-domain: nddo.yndd.io
+domain: ndda.yndd.io
 repository: github.com/yndd/ndda-network
 name: ndda-network
 resources: []
