@@ -6,6 +6,7 @@ import (
 
 type NetworkInstance interface {
 	Update(d *nddav1alpha1.NetworkInstance)
+	// add methods to add list entries e.g. AddInterface in network instance
 }
 
 func NewNetworkInstance(p Device, name string) NetworkInstance {
@@ -31,3 +32,5 @@ type networkInstance struct {
 func (x *networkInstance) Update(d *nddav1alpha1.NetworkInstance) {
 	x.networkInstance = d
 }
+
+
