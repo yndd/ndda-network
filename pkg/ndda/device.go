@@ -10,7 +10,7 @@ type Device interface {
 func NewDevice(p Schema, name string) Device {
 	return &device{
 		// parent
-		parent:          p,
+		parent: p,
 		// children
 		Interface:       make(map[string]Interface),
 		NetworkInstance: make(map[string]NetworkInstance),

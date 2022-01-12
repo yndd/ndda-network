@@ -57,6 +57,9 @@ spec:
                         format: int32
                         type: integer
                       kind:
+                        description: "import ( \t\"reflect\" \n \tmetav1 \"k8s.io/apimachinery/pkg/apis/meta/v1\"
+                          \tnddv1 \"github.com/yndd/ndd-runtime/apis/common/v1\" \t\"k8s.io/apimachinery/pkg/runtime/schema\"
+                          )"
                         enum:
                         - SRL
                         - SROS

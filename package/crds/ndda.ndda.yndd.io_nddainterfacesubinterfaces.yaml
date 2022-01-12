@@ -64,6 +64,9 @@ spec:
                         description: kubebuilder:validation:Minimum=1 kubebuilder:validation:Maximum=4094
                         type: integer
                       kind:
+                        description: "import ( \t\"reflect\" \n \tmetav1 \"k8s.io/apimachinery/pkg/apis/meta/v1\"
+                          \tnddv1 \"github.com/yndd/ndd-runtime/apis/common/v1\" \t\"k8s.io/apimachinery/pkg/runtime/schema\"
+                          )"
                         enum:
                         - BRIDGED
                         - ROUTED

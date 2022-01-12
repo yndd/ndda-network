@@ -13,7 +13,7 @@ type Interface interface {
 func NewInterface(p Device, name string) Interface {
 	return &itfce{
 		// parent
-		parent:       p,
+		parent: p,
 		// children
 		Subinterface: make(map[string]SubInterface),
 		// Data key

@@ -8,10 +8,10 @@ type SubInterface interface {
 	Update(d *nddav1alpha1.InterfaceSubinterface)
 }
 
-func NewSubInterface(p Interface, index string) SubInterface{
+func NewSubInterface(p Interface, index string) SubInterface {
 	return &subinterface{
 		// parent
-		parent:       p,
+		parent: p,
 		// children
 		// data with key
 		Subinterface: &nddav1alpha1.InterfaceSubinterface{
@@ -22,7 +22,7 @@ func NewSubInterface(p Interface, index string) SubInterface{
 
 type subinterface struct {
 	// parent
-	parent       Interface
+	parent Interface
 	// children
 	// Data
 	Subinterface *nddav1alpha1.InterfaceSubinterface

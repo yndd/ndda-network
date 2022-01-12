@@ -10,7 +10,7 @@ type NetworkInstance interface {
 func NewNetworkInstance(p Device, name string) NetworkInstance {
 	return &networkInstance{
 		// parent
-		parent:       p,
+		parent: p,
 		// children
 		// data key
 		//networkInstance: &nddav1alpha1.NetworkInstance{
