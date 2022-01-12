@@ -5,6 +5,7 @@ import (
 )
 
 type NetworkInstance interface {
+	Update(d *nddav1alpha1.NetworkInstance)
 }
 
 func NewNetworkInstance(p Device, name string) NetworkInstance {
