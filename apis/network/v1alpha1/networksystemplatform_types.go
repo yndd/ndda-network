@@ -56,12 +56,12 @@ type SystemPlatformStatus struct {
 
 // +kubebuilder:object:root=true
 
-// NddaSystemPlatform is the Schema for the SystemPlatform API
+// NetworkSystemPlatform is the Schema for the SystemPlatform API
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="STATUS",type="string",JSONPath=".status.conditions[?(@.kind=='Ready')].status"
 // +kubebuilder:printcolumn:name="SYNC",type="string",JSONPath=".status.conditions[?(@.kind=='Synced')].status"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
-type NddaSystemPlatform struct {
+type NetworkSystemPlatform struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
@@ -71,20 +71,20 @@ type NddaSystemPlatform struct {
 
 // +kubebuilder:object:root=true
 
-// NddaSystemPlatformList contains a list of SystemPlatforms
-type NddaSystemPlatformList struct {
+// NetworkSystemPlatformList contains a list of SystemPlatforms
+type NetworkSystemPlatformList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []NddaSystemPlatform `json:"items"`
+	Items           []NetworkSystemPlatform `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&NddaSystemPlatform{}, &NddaSystemPlatformList{})
+	SchemeBuilder.Register(&NetworkSystemPlatform{}, &NetworkSystemPlatformList{})
 }
 
 // SystemPlatform type metadata.
 var (
-	SystemPlatformKindKind         = reflect.TypeOf(NddaSystemPlatform{}).Name()
+	SystemPlatformKindKind         = reflect.TypeOf(NetworkSystemPlatform{}).Name()
 	SystemPlatformGroupKind        = schema.GroupKind{Group: Group, Kind: SystemPlatformKindKind}.String()
 	SystemPlatformKindAPIVersion   = SystemPlatformKindKind + "." + GroupVersion.String()
 	SystemPlatformGroupVersionKind = GroupVersion.WithKind(SystemPlatformKindKind)

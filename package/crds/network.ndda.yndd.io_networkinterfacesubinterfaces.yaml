@@ -1,19 +1,19 @@
 
----
+
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.4.1
   creationTimestamp: null
-  name: nddainterfacesubinterfaces.ndda.ndda.yndd.io
+  name: networkinterfacesubinterfaces.network.ndda.yndd.io
 spec:
-  group: ndda.ndda.yndd.io
+  group: network.ndda.yndd.io
   names:
-    kind: NddaInterfaceSubinterface
-    listKind: NddaInterfaceSubinterfaceList
-    plural: nddainterfacesubinterfaces
-    singular: nddainterfacesubinterface
+    kind: NetworkInterfaceSubinterface
+    listKind: NetworkInterfaceSubinterfaceList
+    plural: networkinterfacesubinterfaces
+    singular: networkinterfacesubinterface
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -29,7 +29,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: NddaInterfaceSubinterface is the Schema for the InterfaceSubinterface
+        description: NetworkInterfaceSubinterface is the Schema for the InterfaceSubinterface
           API
         properties:
           apiVersion:

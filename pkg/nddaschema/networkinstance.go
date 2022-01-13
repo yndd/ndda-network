@@ -1,11 +1,11 @@
 package ndda
 
 import (
-	nddav1alpha1 "github.com/yndd/ndda-network/apis/ndda/v1alpha1"
+	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 )
 
 type NetworkInstance interface {
-	Update(d *nddav1alpha1.NetworkInstance)
+	Update(d *networkv1alpha1.NetworkInstance)
 	// add methods to add list entries e.g. AddInterface in network instance
 }
 
@@ -15,7 +15,7 @@ func NewNetworkInstance(p Device, name string) NetworkInstance {
 		parent: p,
 		// children
 		// data key
-		//networkInstance: &nddav1alpha1.NetworkInstance{
+		//networkInstance: &networkv1alpha1.NetworkInstance{
 		//	Name: &name,
 		//},
 	}
@@ -26,11 +26,9 @@ type networkInstance struct {
 	parent Device
 	// children
 	// data
-	networkInstance *nddav1alpha1.NetworkInstance
+	networkInstance *networkv1alpha1.NetworkInstance
 }
 
-func (x *networkInstance) Update(d *nddav1alpha1.NetworkInstance) {
+func (x *networkInstance) Update(d *networkv1alpha1.NetworkInstance) {
 	x.networkInstance = d
 }
-
-

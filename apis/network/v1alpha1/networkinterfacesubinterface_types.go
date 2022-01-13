@@ -104,12 +104,12 @@ type InterfaceSubinterfaceStatus struct {
 
 // +kubebuilder:object:root=true
 
-// NddaInterfaceSubinterface is the Schema for the InterfaceSubinterface API
+// NetworkInterfaceSubinterface is the Schema for the InterfaceSubinterface API
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="STATUS",type="string",JSONPath=".status.conditions[?(@.kind=='Ready')].status"
 // +kubebuilder:printcolumn:name="SYNC",type="string",JSONPath=".status.conditions[?(@.kind=='Synced')].status"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
-type NddaInterfaceSubinterface struct {
+type NetworkInterfaceSubinterface struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
@@ -119,20 +119,20 @@ type NddaInterfaceSubinterface struct {
 
 // +kubebuilder:object:root=true
 
-// NddaInterfaceSubinterfaceList contains a list of InterfaceSubinterfaces
-type NddaInterfaceSubinterfaceList struct {
+// NetworkInterfaceSubinterfaceList contains a list of InterfaceSubinterfaces
+type NetworkInterfaceSubinterfaceList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []NddaInterfaceSubinterface `json:"items"`
+	Items           []NetworkInterfaceSubinterface `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&NddaInterfaceSubinterface{}, &NddaInterfaceSubinterfaceList{})
+	SchemeBuilder.Register(&NetworkInterfaceSubinterface{}, &NetworkInterfaceSubinterfaceList{})
 }
 
 // InterfaceSubinterface type metadata.
 var (
-	InterfaceSubinterfaceKindKind         = reflect.TypeOf(NddaInterfaceSubinterface{}).Name()
+	InterfaceSubinterfaceKindKind         = reflect.TypeOf(NetworkInterfaceSubinterface{}).Name()
 	InterfaceSubinterfaceGroupKind        = schema.GroupKind{Group: Group, Kind: InterfaceSubinterfaceKindKind}.String()
 	InterfaceSubinterfaceKindAPIVersion   = InterfaceSubinterfaceKindKind + "." + GroupVersion.String()
 	InterfaceSubinterfaceGroupVersionKind = GroupVersion.WithKind(InterfaceSubinterfaceKindKind)

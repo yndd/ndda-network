@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package nddaschema
+package networkschema
 
 type Device interface {
 	// methods children
@@ -36,7 +36,7 @@ func NewDevice(p Schema, key string) Device {
 		NetworkInstance: make(map[string]NetworkInstance),
 		SystemPlatform:  make(map[string]SystemPlatform),
 		// data key
-		//Device: &nddav1alpha1.Device{
+		//Device: &networkv1alpha1.Device{
 		//	Name: &name,
 		//},
 	}

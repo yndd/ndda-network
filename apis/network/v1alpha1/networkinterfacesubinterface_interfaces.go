@@ -24,17 +24,17 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-var _ IFNddaInterfaceSubinterfaceList = &NddaInterfaceSubinterfaceList{}
+var _ IFNetworkInterfaceSubinterfaceList = &NetworkInterfaceSubinterfaceList{}
 
 // +k8s:deepcopy-gen=false
-type IFNddaInterfaceSubinterfaceList interface {
+type IFNetworkInterfaceSubinterfaceList interface {
 	client.ObjectList
 
-	GetInterfaceSubinterfaces() []IFNddaInterfaceSubinterface
+	GetInterfaceSubinterfaces() []IFNetworkInterfaceSubinterface
 }
 
-func (x *NddaInterfaceSubinterfaceList) GetInterfaceSubinterfaces() []IFNddaInterfaceSubinterface {
-	xs := make([]IFNddaInterfaceSubinterface, len(x.Items))
+func (x *NetworkInterfaceSubinterfaceList) GetInterfaceSubinterfaces() []IFNetworkInterfaceSubinterface {
+	xs := make([]IFNetworkInterfaceSubinterface, len(x.Items))
 	for i, r := range x.Items {
 		r := r // Pin range variable so we can take its address.
 		xs[i] = &r
@@ -42,10 +42,10 @@ func (x *NddaInterfaceSubinterfaceList) GetInterfaceSubinterfaces() []IFNddaInte
 	return xs
 }
 
-var _ IFNddaInterfaceSubinterface = &NddaInterfaceSubinterface{}
+var _ IFNetworkInterfaceSubinterface = &NetworkInterfaceSubinterface{}
 
 // +k8s:deepcopy-gen=false
-type IFNddaInterfaceSubinterface interface {
+type IFNetworkInterfaceSubinterface interface {
 	resource.Object
 	resource.Conditioned
 
@@ -66,16 +66,16 @@ type IFNddaInterfaceSubinterface interface {
 }
 
 // GetCondition
-func (x *NddaInterfaceSubinterface) GetCondition(ct nddv1.ConditionKind) nddv1.Condition {
+func (x *NetworkInterfaceSubinterface) GetCondition(ct nddv1.ConditionKind) nddv1.Condition {
 	return x.Status.GetCondition(ct)
 }
 
 // SetConditions
-func (x *NddaInterfaceSubinterface) SetConditions(c ...nddv1.Condition) {
+func (x *NetworkInterfaceSubinterface) SetConditions(c ...nddv1.Condition) {
 	x.Status.SetConditions(c...)
 }
 
-func (x *NddaInterfaceSubinterface) GetOwner() string {
+func (x *NetworkInterfaceSubinterface) GetOwner() string {
 	if s, ok := x.GetLabels()[LabelNddaOwner]; !ok {
 		return ""
 	} else {
@@ -83,7 +83,7 @@ func (x *NddaInterfaceSubinterface) GetOwner() string {
 	}
 }
 
-func (x *NddaInterfaceSubinterface) GetDeploymentPolicy() string {
+func (x *NetworkInterfaceSubinterface) GetDeploymentPolicy() string {
 	if s, ok := x.GetLabels()[LabelNddaDeploymentPolicy]; !ok {
 		return ""
 	} else {
@@ -91,7 +91,7 @@ func (x *NddaInterfaceSubinterface) GetDeploymentPolicy() string {
 	}
 }
 
-func (x *NddaInterfaceSubinterface) GetDeviceName() string {
+func (x *NetworkInterfaceSubinterface) GetDeviceName() string {
 	if s, ok := x.GetLabels()[LabelNddaDevice]; !ok {
 		return ""
 	} else {
@@ -99,7 +99,7 @@ func (x *NddaInterfaceSubinterface) GetDeviceName() string {
 	}
 }
 
-func (x *NddaInterfaceSubinterface) GetEndpointGroup() string {
+func (x *NetworkInterfaceSubinterface) GetEndpointGroup() string {
 	if s, ok := x.GetLabels()[LabelNddaEndpointGroup]; !ok {
 		return ""
 	} else {
@@ -107,7 +107,7 @@ func (x *NddaInterfaceSubinterface) GetEndpointGroup() string {
 	}
 }
 
-func (x *NddaInterfaceSubinterface) GetOrganization() string {
+func (x *NetworkInterfaceSubinterface) GetOrganization() string {
 	if s, ok := x.GetLabels()[LabelNddaOrganization]; !ok {
 		return ""
 	} else {
@@ -115,7 +115,7 @@ func (x *NddaInterfaceSubinterface) GetOrganization() string {
 	}
 }
 
-func (x *NddaInterfaceSubinterface) GetDeployment() string {
+func (x *NetworkInterfaceSubinterface) GetDeployment() string {
 	if s, ok := x.GetLabels()[LabelNddaDeployment]; !ok {
 		return ""
 	} else {
@@ -123,32 +123,32 @@ func (x *NddaInterfaceSubinterface) GetDeployment() string {
 	}
 }
 
-func (x *NddaInterfaceSubinterface) GetAvailabilityZone() string {
+func (x *NetworkInterfaceSubinterface) GetAvailabilityZone() string {
 	if s, ok := x.GetLabels()[LabelNddaAvailabilityZone]; !ok {
 		return ""
 	} else {
 		return s
 	}
 }
-func (x *NddaInterfaceSubinterface) GetSubinterfaceConfig() InterfaceSubinterfaceConfig {
+func (x *NetworkInterfaceSubinterface) GetSubinterfaceConfig() InterfaceSubinterfaceConfig {
 	if reflect.ValueOf(x.Spec.InterfaceSubinterface.Config).IsZero() {
 		return InterfaceSubinterfaceConfig{}
 	}
 	return *x.Spec.InterfaceSubinterface.Config
 }
-func (x *NddaInterfaceSubinterface) GetSubinterfaceIndex() string {
+func (x *NetworkInterfaceSubinterface) GetSubinterfaceIndex() string {
 	if reflect.ValueOf(x.Spec.InterfaceSubinterface.Index).IsZero() {
 		return ""
 	}
 	return *x.Spec.InterfaceSubinterface.Index
 }
-func (x *NddaInterfaceSubinterface) GetSubinterfaceIpv4() []*InterfaceSubinterfaceIpv4 {
+func (x *NetworkInterfaceSubinterface) GetSubinterfaceIpv4() []*InterfaceSubinterfaceIpv4 {
 	if reflect.ValueOf(x.Spec.InterfaceSubinterface.Ipv4).IsZero() {
 		return nil
 	}
 	return x.Spec.InterfaceSubinterface.Ipv4
 }
-func (x *NddaInterfaceSubinterface) GetSubinterfaceIpv6() []*InterfaceSubinterfaceIpv6 {
+func (x *NetworkInterfaceSubinterface) GetSubinterfaceIpv6() []*InterfaceSubinterfaceIpv6 {
 	if reflect.ValueOf(x.Spec.InterfaceSubinterface.Ipv6).IsZero() {
 		return nil
 	}

@@ -70,7 +70,7 @@ type Reconciler struct {
 	record  event.Recorder
 	managed mrManaged
 
-	newInterface func() networkv1alpha1.If
+	newInterface func() networkv1alpha1.IFNetworkInterface
 
 	//infra  map[string]infra.Infra
 	//speedy map[string]int
@@ -87,7 +87,7 @@ func WithLogger(log logging.Logger) ReconcilerOption {
 	}
 }
 
-func WithNewReourceFn(f func() networkv1alpha1.If) ReconcilerOption {
+func WithNewReourceFn(f func() networkv1alpha1.IFNetworkInterface) ReconcilerOption {
 	return func(r *Reconciler) {
 		r.newInterface = f
 	}
@@ -109,7 +109,7 @@ func defaultMRManaged(m ctrl.Manager) mrManaged {
 // Setup adds a controller that reconciles vpc.
 func Setup(mgr ctrl.Manager, o controller.Options, nddcopts *shared.NddControllerOptions) error {
 	name := "ndda/" + strings.ToLower(networkv1alpha1.InterfaceGroupKind)
-	fn := func() networkv1alpha1.If { return &networkv1alpha1.Interface{} }
+	fn := func() networkv1alpha1.IFNetworkInterface { return &networkv1alpha1.NetworkInterface{} }
 
 	r := NewReconciler(mgr,
 		WithLogger(nddcopts.Logger.WithValues("controller", name)),
@@ -120,7 +120,8 @@ func Setup(mgr ctrl.Manager, o controller.Options, nddcopts *shared.NddControlle
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o).
-		For(&networkv1alpha1.Interface{}).
+		For(&networkv1alpha1.NetworkInterface{}).
+		Owns(&networkv1alpha1.NetworkInterface{}).
 		WithEventFilter(resource.IgnoreUpdateWithoutGenerationChangePredicate()).
 		WithEventFilter(resource.IgnoreUpdateWithoutGenerationChangePredicate()).
 		Complete(r)
@@ -227,7 +228,7 @@ func (r *Reconciler) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	return reconcile.Result{RequeueAfter: timeout}, errors.Wrap(r.client.Status().Update(ctx, cr), errUpdateStatus)
 }
 
-func (r *Reconciler) handleAppLogic(ctx context.Context, cr networkv1alpha1.If, vpcname string) (map[string][]string, error) {
+func (r *Reconciler) handleAppLogic(ctx context.Context, cr networkv1alpha1.IFNetworkInterface, vpcname string) (map[string][]string, error) {
 	//log := r.log.WithValues("function", "handleAppLogic", "crname", cr.GetName())
 	//log.Debug("handleAppLogic")
 

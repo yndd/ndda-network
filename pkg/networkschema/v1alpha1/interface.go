@@ -14,10 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package nddaschema
+package networkschema
 
 import (
-	nddav1alpha1 "github.com/yndd/ndda-network/apis/ndda/v1alpha1"
+	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 )
 
 type Interface interface {
@@ -25,7 +25,7 @@ type Interface interface {
 	NewInterfaceSubinterface(key string) InterfaceSubinterface
 	GetInterfaceSubinterfaces() map[string]InterfaceSubinterface
 	// methods data
-	Update(x *nddav1alpha1.Interface)
+	Update(x *networkv1alpha1.Interface)
 }
 
 func NewInterface(p Device, key string) Interface {
@@ -35,7 +35,7 @@ func NewInterface(p Device, key string) Interface {
 		// children
 		InterfaceSubinterface: make(map[string]InterfaceSubinterface),
 		// data key
-		//Interface: &nddav1alpha1.Interface{
+		//Interface: &networkv1alpha1.Interface{
 		//	Name: &name,
 		//},
 	}
@@ -47,7 +47,7 @@ type itfce struct {
 	// children
 	InterfaceSubinterface map[string]InterfaceSubinterface
 	// Data
-	Interface *nddav1alpha1.Interface
+	Interface *networkv1alpha1.Interface
 }
 
 // children
@@ -62,6 +62,6 @@ func (x *itfce) GetInterfaceSubinterfaces() map[string]InterfaceSubinterface {
 }
 
 // Data
-func (x *itfce) Update(d *nddav1alpha1.Interface) {
+func (x *itfce) Update(d *networkv1alpha1.Interface) {
 	x.Interface = d
 }

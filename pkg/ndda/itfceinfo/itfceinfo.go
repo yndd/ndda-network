@@ -3,20 +3,20 @@ package itfceinfo
 import (
 	"reflect"
 
-	nddav1alpha1 "github.com/yndd/ndda-network/apis/ndda/v1alpha1"
+	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 )
 
 type ItfceInfo interface {
 	GetItfceName() string
 	GetItfceIndex() uint32
-	GetItfceKind() nddav1alpha1.E_InterfaceKind
+	GetItfceKind() networkv1alpha1.E_InterfaceKind
 	GetInnerVlanId() uint16
 	GetOuterVlanId() uint16
 	GetIpv4Prefixes() []*string
 	GetIpv6Prefixes() []*string
 	SetItfceName(string)
 	SetItfceIndex(uint32)
-	SetItfceKind(nddav1alpha1.E_InterfaceKind)
+	SetItfceKind(networkv1alpha1.E_InterfaceKind)
 	SetInnerVlanId(uint16)
 	SetOuterVlanId(uint16)
 	SetIpv4Prefixes([]*string)
@@ -37,7 +37,7 @@ func WithItfceIndex(s uint32) ItfceInfoOption {
 	}
 }
 
-func WithItfceKind(s nddav1alpha1.E_InterfaceKind) ItfceInfoOption {
+func WithItfceKind(s networkv1alpha1.E_InterfaceKind) ItfceInfoOption {
 	return func(r *itfceInfo) {
 		r.itfceKind = s
 	}
@@ -83,7 +83,7 @@ func NewItfceInfo(opts ...ItfceInfoOption) ItfceInfo {
 type itfceInfo struct {
 	itfceName    *string
 	itfceIndex   *uint32
-	itfceKind    nddav1alpha1.E_InterfaceKind
+	itfceKind    networkv1alpha1.E_InterfaceKind
 	innerVlanId  *uint16
 	outerVlanId  *uint16
 	ipv4Prefixes []*string
@@ -98,7 +98,7 @@ func (x *itfceInfo) GetItfceIndex() uint32 {
 	return *x.itfceIndex
 }
 
-func (x *itfceInfo) GetItfceKind() nddav1alpha1.E_InterfaceKind {
+func (x *itfceInfo) GetItfceKind() networkv1alpha1.E_InterfaceKind {
 	return x.itfceKind
 }
 
@@ -132,7 +132,7 @@ func (x *itfceInfo) SetItfceIndex(s uint32) {
 	x.itfceIndex = &s
 }
 
-func (x *itfceInfo) SetItfceKind(s nddav1alpha1.E_InterfaceKind) {
+func (x *itfceInfo) SetItfceKind(s networkv1alpha1.E_InterfaceKind) {
 	x.itfceKind = s
 }
 

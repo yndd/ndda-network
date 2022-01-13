@@ -62,12 +62,12 @@ type InterfaceStatus struct {
 
 // +kubebuilder:object:root=true
 
-// NddaInterface is the Schema for the Interface API
+// NetworkInterface is the Schema for the Interface API
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="STATUS",type="string",JSONPath=".status.conditions[?(@.kind=='Ready')].status"
 // +kubebuilder:printcolumn:name="SYNC",type="string",JSONPath=".status.conditions[?(@.kind=='Synced')].status"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
-type NddaInterface struct {
+type NetworkInterface struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
@@ -77,20 +77,20 @@ type NddaInterface struct {
 
 // +kubebuilder:object:root=true
 
-// NddaInterfaceList contains a list of Interfaces
-type NddaInterfaceList struct {
+// NetworkInterfaceList contains a list of Interfaces
+type NetworkInterfaceList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []NddaInterface `json:"items"`
+	Items           []NetworkInterface `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&NddaInterface{}, &NddaInterfaceList{})
+	SchemeBuilder.Register(&NetworkInterface{}, &NetworkInterfaceList{})
 }
 
 // Interface type metadata.
 var (
-	InterfaceKindKind         = reflect.TypeOf(NddaInterface{}).Name()
+	InterfaceKindKind         = reflect.TypeOf(NetworkInterface{}).Name()
 	InterfaceGroupKind        = schema.GroupKind{Group: Group, Kind: InterfaceKindKind}.String()
 	InterfaceKindAPIVersion   = InterfaceKindKind + "." + GroupVersion.String()
 	InterfaceGroupVersionKind = GroupVersion.WithKind(InterfaceKindKind)

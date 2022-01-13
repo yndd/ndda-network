@@ -65,12 +65,12 @@ type NetworkInstanceStatus struct {
 
 // +kubebuilder:object:root=true
 
-// NddaNetworkInstance is the Schema for the NetworkInstance API
+// NetworkNetworkInstance is the Schema for the NetworkInstance API
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="STATUS",type="string",JSONPath=".status.conditions[?(@.kind=='Ready')].status"
 // +kubebuilder:printcolumn:name="SYNC",type="string",JSONPath=".status.conditions[?(@.kind=='Synced')].status"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
-type NddaNetworkInstance struct {
+type NetworkNetworkInstance struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
@@ -80,20 +80,20 @@ type NddaNetworkInstance struct {
 
 // +kubebuilder:object:root=true
 
-// NddaNetworkInstanceList contains a list of NetworkInstances
-type NddaNetworkInstanceList struct {
+// NetworkNetworkInstanceList contains a list of NetworkInstances
+type NetworkNetworkInstanceList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []NddaNetworkInstance `json:"items"`
+	Items           []NetworkNetworkInstance `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&NddaNetworkInstance{}, &NddaNetworkInstanceList{})
+	SchemeBuilder.Register(&NetworkNetworkInstance{}, &NetworkNetworkInstanceList{})
 }
 
 // NetworkInstance type metadata.
 var (
-	NetworkInstanceKindKind         = reflect.TypeOf(NddaNetworkInstance{}).Name()
+	NetworkInstanceKindKind         = reflect.TypeOf(NetworkNetworkInstance{}).Name()
 	NetworkInstanceGroupKind        = schema.GroupKind{Group: Group, Kind: NetworkInstanceKindKind}.String()
 	NetworkInstanceKindAPIVersion   = NetworkInstanceKindKind + "." + GroupVersion.String()
 	NetworkInstanceGroupVersionKind = GroupVersion.WithKind(NetworkInstanceKindKind)

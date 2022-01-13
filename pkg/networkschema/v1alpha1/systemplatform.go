@@ -14,16 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package nddaschema
+package networkschema
 
 import (
-	nddav1alpha1 "github.com/yndd/ndda-network/apis/ndda/v1alpha1"
+	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 )
 
 type SystemPlatform interface {
 	// methods children
 	// methods data
-	Update(x *nddav1alpha1.SystemPlatform)
+	Update(x *networkv1alpha1.SystemPlatform)
 }
 
 func NewSystemPlatform(p Device, key string) SystemPlatform {
@@ -32,7 +32,7 @@ func NewSystemPlatform(p Device, key string) SystemPlatform {
 		parent: p,
 		// children
 		// data key
-		//SystemPlatform: &nddav1alpha1.SystemPlatform{
+		//SystemPlatform: &networkv1alpha1.SystemPlatform{
 		//	Name: &name,
 		//},
 	}
@@ -43,11 +43,11 @@ type systemplatform struct {
 	parent Device
 	// children
 	// Data
-	SystemPlatform *nddav1alpha1.SystemPlatform
+	SystemPlatform *networkv1alpha1.SystemPlatform
 }
 
 // children
 // Data
-func (x *systemplatform) Update(d *nddav1alpha1.SystemPlatform) {
+func (x *systemplatform) Update(d *networkv1alpha1.SystemPlatform) {
 	x.SystemPlatform = d
 }

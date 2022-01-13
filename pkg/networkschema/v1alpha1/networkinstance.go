@@ -14,17 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package nddaschema
+package networkschema
 
 import (
-	nddav1alpha1 "github.com/yndd/ndda-network/apis/ndda/v1alpha1"
+	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 )
 
 type NetworkInstance interface {
 	// methods children
 	// methods data
-	Update(x *nddav1alpha1.NetworkInstance)
-	AddNetworkInstanceInterface(ai *nddav1alpha1.NetworkInstanceConfigInterface)
+	Update(x *networkv1alpha1.NetworkInstance)
+	AddNetworkInstanceInterface(ai *networkv1alpha1.NetworkInstanceConfigInterface)
 }
 
 func NewNetworkInstance(p Device, key string) NetworkInstance {
@@ -33,7 +33,7 @@ func NewNetworkInstance(p Device, key string) NetworkInstance {
 		parent: p,
 		// children
 		// data key
-		//NetworkInstance: &nddav1alpha1.NetworkInstance{
+		//NetworkInstance: &networkv1alpha1.NetworkInstance{
 		//	Name: &name,
 		//},
 	}
@@ -44,16 +44,16 @@ type networkinstance struct {
 	parent Device
 	// children
 	// Data
-	NetworkInstance *nddav1alpha1.NetworkInstance
+	NetworkInstance *networkv1alpha1.NetworkInstance
 }
 
 // children
 // Data
-func (x *networkinstance) Update(d *nddav1alpha1.NetworkInstance) {
+func (x *networkinstance) Update(d *networkv1alpha1.NetworkInstance) {
 	x.NetworkInstance = d
 }
 
 // NetworkInstance interface network-instance-config NetworkInstance [network-instance config]
-func (x *networkinstance) AddNetworkInstanceInterface(ai *nddav1alpha1.NetworkInstanceConfigInterface) {
+func (x *networkinstance) AddNetworkInstanceInterface(ai *networkv1alpha1.NetworkInstanceConfigInterface) {
 	x.NetworkInstance.Config.Interface = append(x.NetworkInstance.Config.Interface, ai)
 }

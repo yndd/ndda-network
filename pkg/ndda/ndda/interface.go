@@ -3,7 +3,7 @@ package ndda
 import (
 	"github.com/yndd/ndd-runtime/pkg/logging"
 	"github.com/yndd/ndda-network/pkg/ndda/itfceinfo"
-	nddaschema "github.com/yndd/ndda-network/pkg/nddaschema/v1alpha1"
+	networkschema "github.com/yndd/ndda-network/pkg/networkschema/v1alpha1"
 	nddov1 "github.com/yndd/nddo-runtime/apis/common/v1"
 	"github.com/yndd/nddo-runtime/pkg/resource"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -29,6 +29,6 @@ type Handler interface {
 	WithLogger(log logging.Logger)
 	WithClient(client.Client)
 	GetSelectedNodeItfces(mg resource.Managed, epgSelectors []*nddov1.EpgInfo, nodeItfceSelectors map[string]*nddov1.ItfceInfo) (map[string][]itfceinfo.ItfceInfo, error)
-	GetSelectedNodeItfcesIrb(mg resource.Managed, s nddaschema.Schema, niName string) (map[string][]itfceinfo.ItfceInfo, error)
-	GetSelectedNodeItfcesVxlan(mg resource.Managed, s nddaschema.Schema, niName string) (map[string][]itfceinfo.ItfceInfo, error)
+	GetSelectedNodeItfcesIrb(mg resource.Managed, s networkschema.Schema, niName string) (map[string][]itfceinfo.ItfceInfo, error)
+	GetSelectedNodeItfcesVxlan(mg resource.Managed, s networkschema.Schema, niName string) (map[string][]itfceinfo.ItfceInfo, error)
 }

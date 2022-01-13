@@ -1,9 +1,9 @@
 package ndda
 
 import (
-	nddav1alpha1 "github.com/yndd/ndda-network/apis/ndda/v1alpha1"
+	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 	"github.com/yndd/ndda-network/pkg/ndda/itfceinfo"
-	nddaschema "github.com/yndd/ndda-network/pkg/nddaschema/v1alpha1"
+	networkschema "github.com/yndd/ndda-network/pkg/networkschema/v1alpha1"
 	nddov1 "github.com/yndd/nddo-runtime/apis/common/v1"
 	"github.com/yndd/nddo-runtime/pkg/odns"
 	"github.com/yndd/nddo-runtime/pkg/resource"
@@ -13,7 +13,7 @@ func (r *handler) GetSelectedNodeItfces(mg resource.Managed, epgSelectors []*ndd
 	// get all ndda interfaces within the oda scope
 	// oda is organization, deployement, availability zone
 	opts := odns.GetClientListOptionFromResourceName(mg.GetName())
-	nddaItfces := r.newNddaItfceList()
+	nddaItfces := r.newNetworkItfceList()
 	if err := r.client.List(r.ctx, nddaItfces, opts...); err != nil {
 		return nil, err
 	}
@@ -25,11 +25,11 @@ func (r *handler) GetSelectedNodeItfces(mg resource.Managed, epgSelectors []*ndd
 
 }
 
-func (r *handler) GetSelectedNodeItfcesIrb(mg resource.Managed, s nddaschema.Schema, niName string) (map[string][]itfceinfo.ItfceInfo, error) {
+func (r *handler) GetSelectedNodeItfcesIrb(mg resource.Managed, s networkschema.Schema, niName string) (map[string][]itfceinfo.ItfceInfo, error) {
 	// get all ndda interfaces within the oda scope
 	// oda is organization, deployement, availability zone
 	opts := odns.GetClientListOptionFromResourceName(mg.GetName())
-	nddaItfces := r.newNddaItfceList()
+	nddaItfces := r.newNetworkItfceList()
 	if err := r.client.List(r.ctx, nddaItfces, opts...); err != nil {
 		return nil, err
 	}
@@ -39,11 +39,11 @@ func (r *handler) GetSelectedNodeItfcesIrb(mg resource.Managed, s nddaschema.Sch
 	return sel.GetSelectedNodeItfces(), nil
 }
 
-func (r *handler) GetSelectedNodeItfcesVxlan(mg resource.Managed, s nddaschema.Schema, niName string) (map[string][]itfceinfo.ItfceInfo, error) {
+func (r *handler) GetSelectedNodeItfcesVxlan(mg resource.Managed, s networkschema.Schema, niName string) (map[string][]itfceinfo.ItfceInfo, error) {
 	// get all ndda interfaces within the oda scope
 	// oda is organization, deployement, availability zone
 	opts := odns.GetClientListOptionFromResourceName(mg.GetName())
-	nddaItfces := r.newNddaItfceList()
+	nddaItfces := r.newNetworkItfceList()
 	if err := r.client.List(r.ctx, nddaItfces, opts...); err != nil {
 		return nil, err
 	}
@@ -55,10 +55,10 @@ func (r *handler) GetSelectedNodeItfcesVxlan(mg resource.Managed, s nddaschema.S
 
 type NodeItfceSelection interface {
 	GetSelectedNodeItfces() map[string][]itfceinfo.ItfceInfo
-	GetNodeItfcesByEpgSelector([]*nddov1.EpgInfo, nddav1alpha1.IFNddaInterfaceList)
-	GetNodeItfcesByNodeItfceSelector(map[string]*nddov1.ItfceInfo, nddav1alpha1.IFNddaInterfaceList)
-	GetVxlanNodeItfces(string, nddaschema.Schema, nddav1alpha1.IFNddaInterfaceList)
-	GetIrbNodeItfces(string, nddaschema.Schema, nddav1alpha1.IFNddaInterfaceList)
+	GetNodeItfcesByEpgSelector([]*nddov1.EpgInfo, networkv1alpha1.IFNetworkInterfaceList)
+	GetNodeItfcesByNodeItfceSelector(map[string]*nddov1.ItfceInfo, networkv1alpha1.IFNetworkInterfaceList)
+	GetVxlanNodeItfces(string, networkschema.Schema, networkv1alpha1.IFNetworkInterfaceList)
+	GetIrbNodeItfces(string, networkschema.Schema, networkv1alpha1.IFNetworkInterfaceList)
 }
 
 func NewNodeItfceSelection() NodeItfceSelection {
@@ -75,7 +75,7 @@ func (x *selectedNodeItfces) GetSelectedNodeItfces() map[string][]itfceinfo.Itfc
 	return x.nodes
 }
 
-func (x *selectedNodeItfces) GetNodeItfcesByEpgSelector(epgSelectors []*nddov1.EpgInfo, nddaItfceList nddav1alpha1.IFNddaInterfaceList) {
+func (x *selectedNodeItfces) GetNodeItfcesByEpgSelector(epgSelectors []*nddov1.EpgInfo, nddaItfceList networkv1alpha1.IFNetworkInterfaceList) {
 	for _, nddaItfce := range nddaItfceList.GetInterfaces() {
 		//fmt.Printf("getNodeItfcesByEpgSelector: epg: %s, itfceepg: %s, nodename: %s, itfcename: %s, lagmember: %t\n", epg, nddaItfce.GetEndpointGroup(), nddaItfce.GetNodeName(), nddaItfce.GetInterfaceName(), nddaItfce.GetLagMember())
 		// TODO add specifc endpoint group selector
@@ -87,7 +87,7 @@ func (x *selectedNodeItfces) GetNodeItfcesByEpgSelector(epgSelectors []*nddov1.E
 					x.addNodeItfce(nddaItfce.GetDeviceName(), nddaItfce.GetInterfaceName(), itfceinfo.NewItfceInfo(
 						itfceinfo.WithInnerVlanId(epgSelector.InnerVlanId),
 						itfceinfo.WithOuterVlanId(epgSelector.OuterVlanId),
-						itfceinfo.WithItfceKind(nddav1alpha1.E_InterfaceKind_INTERFACE),
+						itfceinfo.WithItfceKind(networkv1alpha1.E_InterfaceKind_INTERFACE),
 						itfceinfo.WithIpv4Prefixes(epgSelector.Ipv4Prefixes),
 						itfceinfo.WithIpv6Prefixes(epgSelector.Ipv6Prefixes),
 					))
@@ -97,7 +97,7 @@ func (x *selectedNodeItfces) GetNodeItfcesByEpgSelector(epgSelectors []*nddov1.E
 	}
 }
 
-func (x *selectedNodeItfces) GetNodeItfcesByNodeItfceSelector(nodeItfceSelectors map[string]*nddov1.ItfceInfo, nddaItfceList nddav1alpha1.IFNddaInterfaceList) {
+func (x *selectedNodeItfces) GetNodeItfcesByNodeItfceSelector(nodeItfceSelectors map[string]*nddov1.ItfceInfo, nddaItfceList networkv1alpha1.IFNetworkInterfaceList) {
 	for _, nddaItfce := range nddaItfceList.GetInterfaces() {
 		for deviceName, itfceInfo := range nodeItfceSelectors {
 			//fmt.Printf("getNodeItfcesByNodeItfceSelector: nodename: %s, itfcename: %s, lagmember: %t, nodename: %s\n", nddaItfce.GetNodeName(), nddaItfce.GetInterfaceName(), nddaItfce.GetLagMember(), nodeName)
@@ -107,7 +107,7 @@ func (x *selectedNodeItfces) GetNodeItfcesByNodeItfceSelector(nodeItfceSelectors
 				x.addNodeItfce(nddaItfce.GetDeviceName(), nddaItfce.GetInterfaceName(), itfceinfo.NewItfceInfo(
 					itfceinfo.WithInnerVlanId(itfceInfo.InnerVlanId),
 					itfceinfo.WithOuterVlanId(itfceInfo.OuterVlanId),
-					itfceinfo.WithItfceKind(nddav1alpha1.E_InterfaceKind_INTERFACE),
+					itfceinfo.WithItfceKind(networkv1alpha1.E_InterfaceKind_INTERFACE),
 					itfceinfo.WithIpv4Prefixes(itfceInfo.Ipv4Prefixes),
 					itfceinfo.WithIpv6Prefixes(itfceInfo.Ipv6Prefixes),
 				))
@@ -116,14 +116,14 @@ func (x *selectedNodeItfces) GetNodeItfcesByNodeItfceSelector(nodeItfceSelectors
 	}
 }
 
-func (x *selectedNodeItfces) GetVxlanNodeItfces(niName string, s nddaschema.Schema, nddaItfceList nddav1alpha1.IFNddaInterfaceList) {
+func (x *selectedNodeItfces) GetVxlanNodeItfces(niName string, s networkschema.Schema, nddaItfceList networkv1alpha1.IFNetworkInterfaceList) {
 	for _, nddaItfce := range nddaItfceList.GetInterfaces() {
 		for deviceName, d := range s.GetDevices() {
 			for dniName := range d.GetNetworkInstances() {
 				if dniName == niName {
-					if nddaItfce.GetDeviceName() == deviceName && nddaItfce.GetInterfaceConfigKind() == nddav1alpha1.E_InterfaceKind_VXLAN {
+					if nddaItfce.GetDeviceName() == deviceName && nddaItfce.GetInterfaceConfigKind() == networkv1alpha1.E_InterfaceKind_VXLAN {
 						x.addNodeItfce(deviceName, nddaItfce.GetInterfaceName(), itfceinfo.NewItfceInfo(
-							itfceinfo.WithItfceKind(nddav1alpha1.E_InterfaceKind_VXLAN),
+							itfceinfo.WithItfceKind(networkv1alpha1.E_InterfaceKind_VXLAN),
 							//WithItfceIndex(ni.GetIndex()), // we use the vxlan
 							//WithIpv4Prefixes(make([]*string, 0)),
 							//WithIpv6Prefixes(make([]*string, 0)),
@@ -135,15 +135,15 @@ func (x *selectedNodeItfces) GetVxlanNodeItfces(niName string, s nddaschema.Sche
 	}
 }
 
-func (x *selectedNodeItfces) GetIrbNodeItfces(niName string, s nddaschema.Schema, nddaItfceList nddav1alpha1.IFNddaInterfaceList) {
+func (x *selectedNodeItfces) GetIrbNodeItfces(niName string, s networkschema.Schema, nddaItfceList networkv1alpha1.IFNetworkInterfaceList) {
 	for _, nddaItfce := range nddaItfceList.GetInterfaces() {
 		for deviceName, d := range s.GetDevices() {
 			for dniName := range d.GetNetworkInstances() {
 				if dniName == niName {
 					// we only select the irb interfaces to retain the index
-					if nddaItfce.GetDeviceName() == deviceName && nddaItfce.GetInterfaceConfigKind() == nddav1alpha1.E_InterfaceKind_IRB {
+					if nddaItfce.GetDeviceName() == deviceName && nddaItfce.GetInterfaceConfigKind() == networkv1alpha1.E_InterfaceKind_IRB {
 						x.addNodeItfce(deviceName, nddaItfce.GetInterfaceName(), itfceinfo.NewItfceInfo(
-							itfceinfo.WithItfceKind(nddav1alpha1.E_InterfaceKind_IRB),
+							itfceinfo.WithItfceKind(networkv1alpha1.E_InterfaceKind_IRB),
 							//WithItfceIndex(9999), // dummy
 							//WithIpv4Prefixes(ipv4Prefixes),
 							//WithIpv6Prefixes(ipv6Prefixes),

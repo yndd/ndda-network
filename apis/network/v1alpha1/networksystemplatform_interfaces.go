@@ -24,17 +24,17 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-var _ IFNddaSystemPlatformList = &NddaSystemPlatformList{}
+var _ IFNetworkSystemPlatformList = &NetworkSystemPlatformList{}
 
 // +k8s:deepcopy-gen=false
-type IFNddaSystemPlatformList interface {
+type IFNetworkSystemPlatformList interface {
 	client.ObjectList
 
-	GetSystemPlatforms() []IFNddaSystemPlatform
+	GetSystemPlatforms() []IFNetworkSystemPlatform
 }
 
-func (x *NddaSystemPlatformList) GetSystemPlatforms() []IFNddaSystemPlatform {
-	xs := make([]IFNddaSystemPlatform, len(x.Items))
+func (x *NetworkSystemPlatformList) GetSystemPlatforms() []IFNetworkSystemPlatform {
+	xs := make([]IFNetworkSystemPlatform, len(x.Items))
 	for i, r := range x.Items {
 		r := r // Pin range variable so we can take its address.
 		xs[i] = &r
@@ -42,10 +42,10 @@ func (x *NddaSystemPlatformList) GetSystemPlatforms() []IFNddaSystemPlatform {
 	return xs
 }
 
-var _ IFNddaSystemPlatform = &NddaSystemPlatform{}
+var _ IFNetworkSystemPlatform = &NetworkSystemPlatform{}
 
 // +k8s:deepcopy-gen=false
-type IFNddaSystemPlatform interface {
+type IFNetworkSystemPlatform interface {
 	resource.Object
 	resource.Conditioned
 
@@ -68,16 +68,16 @@ type IFNddaSystemPlatform interface {
 }
 
 // GetCondition
-func (x *NddaSystemPlatform) GetCondition(ct nddv1.ConditionKind) nddv1.Condition {
+func (x *NetworkSystemPlatform) GetCondition(ct nddv1.ConditionKind) nddv1.Condition {
 	return x.Status.GetCondition(ct)
 }
 
 // SetConditions
-func (x *NddaSystemPlatform) SetConditions(c ...nddv1.Condition) {
+func (x *NetworkSystemPlatform) SetConditions(c ...nddv1.Condition) {
 	x.Status.SetConditions(c...)
 }
 
-func (x *NddaSystemPlatform) GetOwner() string {
+func (x *NetworkSystemPlatform) GetOwner() string {
 	if s, ok := x.GetLabels()[LabelNddaOwner]; !ok {
 		return ""
 	} else {
@@ -85,7 +85,7 @@ func (x *NddaSystemPlatform) GetOwner() string {
 	}
 }
 
-func (x *NddaSystemPlatform) GetDeploymentPolicy() string {
+func (x *NetworkSystemPlatform) GetDeploymentPolicy() string {
 	if s, ok := x.GetLabels()[LabelNddaDeploymentPolicy]; !ok {
 		return ""
 	} else {
@@ -93,7 +93,7 @@ func (x *NddaSystemPlatform) GetDeploymentPolicy() string {
 	}
 }
 
-func (x *NddaSystemPlatform) GetDeviceName() string {
+func (x *NetworkSystemPlatform) GetDeviceName() string {
 	if s, ok := x.GetLabels()[LabelNddaDevice]; !ok {
 		return ""
 	} else {
@@ -101,7 +101,7 @@ func (x *NddaSystemPlatform) GetDeviceName() string {
 	}
 }
 
-func (x *NddaSystemPlatform) GetEndpointGroup() string {
+func (x *NetworkSystemPlatform) GetEndpointGroup() string {
 	if s, ok := x.GetLabels()[LabelNddaEndpointGroup]; !ok {
 		return ""
 	} else {
@@ -109,7 +109,7 @@ func (x *NddaSystemPlatform) GetEndpointGroup() string {
 	}
 }
 
-func (x *NddaSystemPlatform) GetOrganization() string {
+func (x *NetworkSystemPlatform) GetOrganization() string {
 	if s, ok := x.GetLabels()[LabelNddaOrganization]; !ok {
 		return ""
 	} else {
@@ -117,7 +117,7 @@ func (x *NddaSystemPlatform) GetOrganization() string {
 	}
 }
 
-func (x *NddaSystemPlatform) GetDeployment() string {
+func (x *NetworkSystemPlatform) GetDeployment() string {
 	if s, ok := x.GetLabels()[LabelNddaDeployment]; !ok {
 		return ""
 	} else {
@@ -125,38 +125,38 @@ func (x *NddaSystemPlatform) GetDeployment() string {
 	}
 }
 
-func (x *NddaSystemPlatform) GetAvailabilityZone() string {
+func (x *NetworkSystemPlatform) GetAvailabilityZone() string {
 	if s, ok := x.GetLabels()[LabelNddaAvailabilityZone]; !ok {
 		return ""
 	} else {
 		return s
 	}
 }
-func (x *NddaSystemPlatform) GetPlatformConfig() SystemPlatformConfig {
+func (x *NetworkSystemPlatform) GetPlatformConfig() SystemPlatformConfig {
 	if reflect.ValueOf(x.Spec.SystemPlatform.Config).IsZero() {
 		return SystemPlatformConfig{}
 	}
 	return *x.Spec.SystemPlatform.Config
 }
-func (x *NddaSystemPlatform) GetPlatformConfigIndex() uint32 {
+func (x *NetworkSystemPlatform) GetPlatformConfigIndex() uint32 {
 	if reflect.ValueOf(x.Spec.SystemPlatform.Config.Index).IsZero() {
 		return 0
 	}
 	return *x.Spec.SystemPlatform.Config.Index
 }
-func (x *NddaSystemPlatform) GetPlatformConfigKind() E_SystemPlatformKind {
+func (x *NetworkSystemPlatform) GetPlatformConfigKind() E_SystemPlatformKind {
 	if reflect.ValueOf(x.Spec.SystemPlatform.Config.Kind).IsZero() {
 		return ""
 	}
 	return x.Spec.SystemPlatform.Config.Kind
 }
-func (x *NddaSystemPlatform) GetPlatformConfigName() string {
+func (x *NetworkSystemPlatform) GetPlatformConfigName() string {
 	if reflect.ValueOf(x.Spec.SystemPlatform.Config.Name).IsZero() {
 		return ""
 	}
 	return *x.Spec.SystemPlatform.Config.Name
 }
-func (x *NddaSystemPlatform) GetPlatformConfigVersion() string {
+func (x *NetworkSystemPlatform) GetPlatformConfigVersion() string {
 	if reflect.ValueOf(x.Spec.SystemPlatform.Config.Version).IsZero() {
 		return ""
 	}

@@ -1,21 +1,21 @@
 package niinfo
 
 import (
-	nddav1alpha1 "github.com/yndd/ndda-network/apis/ndda/v1alpha1"
+	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 )
 
 /*
 type NiInfo interface {
 	GetItfceName() string
 	GetItfceIndex() uint32
-	GetItfceKind() nddav1alpha1.E_InterfaceKind
+	GetItfceKind() networkv1alpha1.E_InterfaceKind
 	GetInnerVlanId() uint16
 	GetOuterVlanId() uint16
 	GetIpv4Prefixes() []*string
 	GetIpv6Prefixes() []*string
 	SetItfceName(string)
 	SetItfceIndex(uint32)
-	SetItfceKind(nddav1alpha1.E_InterfaceKind)
+	SetItfceKind(networkv1alpha1.E_InterfaceKind)
 	SetInnerVlanId(uint16)
 	SetOuterVlanId(uint16)
 	SetIpv4Prefixes([]*string)
@@ -38,7 +38,7 @@ func WithItfceIndex(s uint32) ItfceInfoOption {
 	}
 }
 
-func WithItfceKind(s nddav1alpha1.E_InterfaceKind) ItfceInfoOption {
+func WithItfceKind(s networkv1alpha1.E_InterfaceKind) ItfceInfoOption {
 	return func(r *itfceInfo) {
 		r.itfceKind = s
 	}
@@ -58,7 +58,7 @@ func NewItfceInfo(opts ...NiInfoOption) *NiInfo {
 type NiInfo struct {
 	Name  *string
 	Index *uint32
-	Kind  nddav1alpha1.E_NetworkInstanceKind
+	Kind  networkv1alpha1.E_NetworkInstanceKind
 }
 
 func (x *NiInfo) GetNiName() string {
@@ -69,7 +69,7 @@ func (x *NiInfo) GetNiIndex() uint32 {
 	return *x.Index
 }
 
-func (x *NiInfo) GetNiKind() nddav1alpha1.E_NetworkInstanceKind {
+func (x *NiInfo) GetNiKind() networkv1alpha1.E_NetworkInstanceKind {
 	return x.Kind
 }
 
@@ -81,6 +81,6 @@ func (x *NiInfo) SetNiIndex(s uint32) {
 	x.Index = &s
 }
 
-func (x *NiInfo) SetNiKind(s nddav1alpha1.E_NetworkInstanceKind) {
+func (x *NiInfo) SetNiKind(s networkv1alpha1.E_NetworkInstanceKind) {
 	x.Kind = s
 }

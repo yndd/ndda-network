@@ -24,17 +24,17 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-var _ IFNddaInterfaceList = &NddaInterfaceList{}
+var _ IFNetworkInterfaceList = &NetworkInterfaceList{}
 
 // +k8s:deepcopy-gen=false
-type IFNddaInterfaceList interface {
+type IFNetworkInterfaceList interface {
 	client.ObjectList
 
-	GetInterfaces() []IFNddaInterface
+	GetInterfaces() []IFNetworkInterface
 }
 
-func (x *NddaInterfaceList) GetInterfaces() []IFNddaInterface {
-	xs := make([]IFNddaInterface, len(x.Items))
+func (x *NetworkInterfaceList) GetInterfaces() []IFNetworkInterface {
+	xs := make([]IFNetworkInterface, len(x.Items))
 	for i, r := range x.Items {
 		r := r // Pin range variable so we can take its address.
 		xs[i] = &r
@@ -42,10 +42,10 @@ func (x *NddaInterfaceList) GetInterfaces() []IFNddaInterface {
 	return xs
 }
 
-var _ IFNddaInterface = &NddaInterface{}
+var _ IFNetworkInterface = &NetworkInterface{}
 
 // +k8s:deepcopy-gen=false
-type IFNddaInterface interface {
+type IFNetworkInterface interface {
 	resource.Object
 	resource.Conditioned
 
@@ -72,16 +72,16 @@ type IFNddaInterface interface {
 }
 
 // GetCondition
-func (x *NddaInterface) GetCondition(ct nddv1.ConditionKind) nddv1.Condition {
+func (x *NetworkInterface) GetCondition(ct nddv1.ConditionKind) nddv1.Condition {
 	return x.Status.GetCondition(ct)
 }
 
 // SetConditions
-func (x *NddaInterface) SetConditions(c ...nddv1.Condition) {
+func (x *NetworkInterface) SetConditions(c ...nddv1.Condition) {
 	x.Status.SetConditions(c...)
 }
 
-func (x *NddaInterface) GetOwner() string {
+func (x *NetworkInterface) GetOwner() string {
 	if s, ok := x.GetLabels()[LabelNddaOwner]; !ok {
 		return ""
 	} else {
@@ -89,7 +89,7 @@ func (x *NddaInterface) GetOwner() string {
 	}
 }
 
-func (x *NddaInterface) GetDeploymentPolicy() string {
+func (x *NetworkInterface) GetDeploymentPolicy() string {
 	if s, ok := x.GetLabels()[LabelNddaDeploymentPolicy]; !ok {
 		return ""
 	} else {
@@ -97,7 +97,7 @@ func (x *NddaInterface) GetDeploymentPolicy() string {
 	}
 }
 
-func (x *NddaInterface) GetDeviceName() string {
+func (x *NetworkInterface) GetDeviceName() string {
 	if s, ok := x.GetLabels()[LabelNddaDevice]; !ok {
 		return ""
 	} else {
@@ -105,7 +105,7 @@ func (x *NddaInterface) GetDeviceName() string {
 	}
 }
 
-func (x *NddaInterface) GetEndpointGroup() string {
+func (x *NetworkInterface) GetEndpointGroup() string {
 	if s, ok := x.GetLabels()[LabelNddaEndpointGroup]; !ok {
 		return ""
 	} else {
@@ -113,7 +113,7 @@ func (x *NddaInterface) GetEndpointGroup() string {
 	}
 }
 
-func (x *NddaInterface) GetOrganization() string {
+func (x *NetworkInterface) GetOrganization() string {
 	if s, ok := x.GetLabels()[LabelNddaOrganization]; !ok {
 		return ""
 	} else {
@@ -121,7 +121,7 @@ func (x *NddaInterface) GetOrganization() string {
 	}
 }
 
-func (x *NddaInterface) GetDeployment() string {
+func (x *NetworkInterface) GetDeployment() string {
 	if s, ok := x.GetLabels()[LabelNddaDeployment]; !ok {
 		return ""
 	} else {
@@ -129,62 +129,62 @@ func (x *NddaInterface) GetDeployment() string {
 	}
 }
 
-func (x *NddaInterface) GetAvailabilityZone() string {
+func (x *NetworkInterface) GetAvailabilityZone() string {
 	if s, ok := x.GetLabels()[LabelNddaAvailabilityZone]; !ok {
 		return ""
 	} else {
 		return s
 	}
 }
-func (x *NddaInterface) GetInterfaceConfig() InterfaceConfig {
+func (x *NetworkInterface) GetInterfaceConfig() InterfaceConfig {
 	if reflect.ValueOf(x.Spec.Interface.Config).IsZero() {
 		return InterfaceConfig{}
 	}
 	return *x.Spec.Interface.Config
 }
-func (x *NddaInterface) GetInterfaceName() string {
+func (x *NetworkInterface) GetInterfaceName() string {
 	if reflect.ValueOf(x.Spec.Interface.Name).IsZero() {
 		return ""
 	}
 	return *x.Spec.Interface.Name
 }
-func (x *NddaInterface) GetInterfaceConfigKind() E_InterfaceKind {
+func (x *NetworkInterface) GetInterfaceConfigKind() E_InterfaceKind {
 	if reflect.ValueOf(x.Spec.Interface.Config.Kind).IsZero() {
 		return ""
 	}
 	return x.Spec.Interface.Config.Kind
 }
-func (x *NddaInterface) GetInterfaceConfigLacp() bool {
+func (x *NetworkInterface) GetInterfaceConfigLacp() bool {
 	if reflect.ValueOf(x.Spec.Interface.Config.Lacp).IsZero() {
 		return false
 	}
 	return *x.Spec.Interface.Config.Lacp
 }
-func (x *NddaInterface) GetInterfaceConfigLacpFallback() bool {
+func (x *NetworkInterface) GetInterfaceConfigLacpFallback() bool {
 	if reflect.ValueOf(x.Spec.Interface.Config.LacpFallback).IsZero() {
 		return false
 	}
 	return *x.Spec.Interface.Config.LacpFallback
 }
-func (x *NddaInterface) GetInterfaceConfigLag() bool {
+func (x *NetworkInterface) GetInterfaceConfigLag() bool {
 	if reflect.ValueOf(x.Spec.Interface.Config.Lag).IsZero() {
 		return false
 	}
 	return *x.Spec.Interface.Config.Lag
 }
-func (x *NddaInterface) GetInterfaceConfigLagMember() bool {
+func (x *NetworkInterface) GetInterfaceConfigLagMember() bool {
 	if reflect.ValueOf(x.Spec.Interface.Config.LagMember).IsZero() {
 		return false
 	}
 	return *x.Spec.Interface.Config.LagMember
 }
-func (x *NddaInterface) GetInterfaceConfigLagName() string {
+func (x *NetworkInterface) GetInterfaceConfigLagName() string {
 	if reflect.ValueOf(x.Spec.Interface.Config.LagName).IsZero() {
 		return ""
 	}
 	return *x.Spec.Interface.Config.LagName
 }
-func (x *NddaInterface) GetInterfaceConfigName() string {
+func (x *NetworkInterface) GetInterfaceConfigName() string {
 	if reflect.ValueOf(x.Spec.Interface.Config.Name).IsZero() {
 		return ""
 	}

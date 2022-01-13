@@ -4,17 +4,21 @@ import (
 	"context"
 
 	"github.com/yndd/ndd-runtime/pkg/logging"
-	nddav1alpha1 "github.com/yndd/ndda-network/apis/ndda/v1alpha1"
+	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 	"github.com/yndd/nddo-runtime/pkg/resource"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func New(opts ...Option) Handler {
 	s := &handler{
-		newNddaItfceList:        func() nddav1alpha1.IFNddaInterfaceList { return &nddav1alpha1.NddaInterfaceList{} },
-		newNddaSubInterfaceList: func() nddav1alpha1.IFNddaInterfaceSubinterfaceList { return &nddav1alpha1.NddaInterfaceSubinterfaceList{} },
-		newNddaNiList:           func() nddav1alpha1.IFNddaNetworkInstanceList { return &nddav1alpha1.NddaNetworkInstanceList{} },
-		ctx:                     context.Background(),
+		newNetworkItfceList: func() networkv1alpha1.IFNetworkInterfaceList { return &networkv1alpha1.NetworkInterfaceList{} },
+		newNetworkSubInterfaceList: func() networkv1alpha1.IFNetworkInterfaceSubinterfaceList {
+			return &networkv1alpha1.NetworkInterfaceSubinterfaceList{}
+		},
+		newNetworkNiList: func() networkv1alpha1.IFNetworkNetworkInstanceList {
+			return &networkv1alpha1.NetworkNetworkInstanceList{}
+		},
+		ctx: context.Background(),
 	}
 
 	for _, opt := range opts {
@@ -41,7 +45,7 @@ type handler struct {
 	client client.Client
 	ctx    context.Context
 
-	newNddaItfceList        func() nddav1alpha1.IFNddaInterfaceList
-	newNddaSubInterfaceList func() nddav1alpha1.IFNddaInterfaceSubinterfaceList
-	newNddaNiList           func() nddav1alpha1.IFNddaNetworkInstanceList
+	newNetworkItfceList        func() networkv1alpha1.IFNetworkInterfaceList
+	newNetworkSubInterfaceList func() networkv1alpha1.IFNetworkInterfaceSubinterfaceList
+	newNetworkNiList           func() networkv1alpha1.IFNetworkNetworkInstanceList
 }

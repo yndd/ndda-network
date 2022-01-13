@@ -14,18 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package nddaschema
+package networkschema
 
 import (
-	nddav1alpha1 "github.com/yndd/ndda-network/apis/ndda/v1alpha1"
+	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 )
 
 type InterfaceSubinterface interface {
 	// methods children
 	// methods data
-	Update(x *nddav1alpha1.InterfaceSubinterface)
-	AddInterfaceSubinterfaceIpv4(ai *nddav1alpha1.InterfaceSubinterfaceIpv4)
-	AddInterfaceSubinterfaceIpv6(ai *nddav1alpha1.InterfaceSubinterfaceIpv6)
+	Update(x *networkv1alpha1.InterfaceSubinterface)
+	AddInterfaceSubinterfaceIpv4(ai *networkv1alpha1.InterfaceSubinterfaceIpv4)
+	AddInterfaceSubinterfaceIpv6(ai *networkv1alpha1.InterfaceSubinterfaceIpv6)
 }
 
 func NewInterfaceSubinterface(p Interface, key string) InterfaceSubinterface {
@@ -34,7 +34,7 @@ func NewInterfaceSubinterface(p Interface, key string) InterfaceSubinterface {
 		parent: p,
 		// children
 		// data key
-		//InterfaceSubinterface: &nddav1alpha1.InterfaceSubinterface{
+		//InterfaceSubinterface: &networkv1alpha1.InterfaceSubinterface{
 		//	Name: &name,
 		//},
 	}
@@ -45,21 +45,21 @@ type interfacesubinterface struct {
 	parent Interface
 	// children
 	// Data
-	InterfaceSubinterface *nddav1alpha1.InterfaceSubinterface
+	InterfaceSubinterface *networkv1alpha1.InterfaceSubinterface
 }
 
 // children
 // Data
-func (x *interfacesubinterface) Update(d *nddav1alpha1.InterfaceSubinterface) {
+func (x *interfacesubinterface) Update(d *networkv1alpha1.InterfaceSubinterface) {
 	x.InterfaceSubinterface = d
 }
 
 // InterfaceSubinterface ipv4 subinterface Subinterface [subinterface]
-func (x *interfacesubinterface) AddInterfaceSubinterfaceIpv4(ai *nddav1alpha1.InterfaceSubinterfaceIpv4) {
+func (x *interfacesubinterface) AddInterfaceSubinterfaceIpv4(ai *networkv1alpha1.InterfaceSubinterfaceIpv4) {
 	x.InterfaceSubinterface.Ipv4 = append(x.InterfaceSubinterface.Ipv4, ai)
 }
 
 // InterfaceSubinterface ipv6 subinterface Subinterface [subinterface]
-func (x *interfacesubinterface) AddInterfaceSubinterfaceIpv6(ai *nddav1alpha1.InterfaceSubinterfaceIpv6) {
+func (x *interfacesubinterface) AddInterfaceSubinterfaceIpv6(ai *networkv1alpha1.InterfaceSubinterfaceIpv6) {
 	x.InterfaceSubinterface.Ipv6 = append(x.InterfaceSubinterface.Ipv6, ai)
 }
