@@ -1317,8 +1317,9 @@ github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77/go.mod h1:
 github.com/yndd/ndd-core v0.1.6/go.mod h1:zlQTBILqiJlYj3WYy0yHGBBIMZemhVXoNnXE4vhF+pI=
 github.com/yndd/ndd-runtime v0.1.1/go.mod h1:H9878DK7V5xxs4bi1pMrWPZJ6/+X3MqpKaErDPkcLs4=
 github.com/yndd/ndd-runtime v0.1.2/go.mod h1:Y07uIZQgSqz5h3UeAYp24JyDjugH0T/zeACjNFVnBes=
-github.com/yndd/ndd-runtime v0.1.6 h1:Pcn0ZsKDii9tKpxw4wf/tYey0iQVHxk8qQwSboGdzxU=
 github.com/yndd/ndd-runtime v0.1.6/go.mod h1:Y07uIZQgSqz5h3UeAYp24JyDjugH0T/zeACjNFVnBes=
+github.com/yndd/ndd-runtime v0.1.7 h1:1PCYr5aejRx8+zGU2M4thNgVB9YSAQVw9Yhyuob3eh4=
+github.com/yndd/ndd-runtime v0.1.7/go.mod h1:Y07uIZQgSqz5h3UeAYp24JyDjugH0T/zeACjNFVnBes=
 github.com/yndd/ndd-yang v0.1.62/go.mod h1:GT/8efIchBH1sQ6J64AM1FZDXXIaWeirkYUpbmDPlHI=
 github.com/yndd/ndd-yang v0.1.276/go.mod h1:vcKhP5OU3oJHSEILaE0HEgZKxftcu2GFOGdS6w0TauM=
 github.com/yndd/ndda-network v0.0.6/go.mod h1:xTLmLhhuUvMwQ5wcRvVCsymcq9PDK98RoXDf+X3rC2I=
