@@ -1,5 +1,10 @@
 package linkinfo
 
+import (
+	"github.com/yndd/ndd-runtime/pkg/utils"
+	topov1alpha1 "github.com/yndd/nddr-topo-registry/apis/topo/v1alpha1"
+)
+
 type LinkInfoOption func(*LinkInfo)
 
 func NewLinkInfo(opts ...LinkInfoOption) *LinkInfo {
@@ -55,4 +60,19 @@ func (x *LinkInfo) GetIpv6Prefixes() []*string {
 
 func (x *LinkInfo) SetLinkName(s string) {
 	x.Name = &s
+}
+
+func (x *LinkInfo) PopulateLinkInfo(topolink topov1alpha1.Tl) {
+	for i := 0; i <= 1; i++ {
+		switch i {
+		case 0:
+			x.Name = utils.StringPtr(topolink.GetName())
+			x.DeviceNames[i] = utils.StringPtr(topolink.GetEndpointANodeName())
+			x.DeviceNames[i] = utils.StringPtr(topolink.GetEndpointAInterfaceName())
+		case 1:
+			x.Name = utils.StringPtr(topolink.GetName())
+			x.DeviceNames[i] = utils.StringPtr(topolink.GetEndpointBNodeName())
+			x.DeviceNames[i] = utils.StringPtr(topolink.GetEndpointBInterfaceName())
+		}
+	}
 }
