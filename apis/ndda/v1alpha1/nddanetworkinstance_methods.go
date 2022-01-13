@@ -28,8 +28,8 @@ import (
 type E_NetworkInstanceKind string
 
 const (
-	NetworkInstanceKind_BRIDGED E_NetworkInstanceKind = "BRIDGED"
-	NetworkInstanceKind_ROUTED  E_NetworkInstanceKind = "ROUTED"
+	E_NetworkInstanceKind_BRIDGED E_NetworkInstanceKind = "BRIDGED"
+	E_NetworkInstanceKind_ROUTED  E_NetworkInstanceKind = "ROUTED"
 )
 
 func NewNetworkInstance() *NetworkInstanceConfig {

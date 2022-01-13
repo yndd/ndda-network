@@ -14,50 +14,40 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package ndda
+package nddaschema
 
 import (
 	nddav1alpha1 "github.com/yndd/ndda-network/apis/ndda/v1alpha1"
 )
 
-type Interface interface {
+type SystemPlatform interface {
 	// methods children
-	NewInterfaceSubinterface(key string) InterfaceSubinterface
 	// methods data
-	Update(x *nddav1alpha1.Interface)
+	Update(x *nddav1alpha1.SystemPlatform)
 }
 
-func NewInterface(p Device, key string) Interface {
-	return &itfce{
+func NewSystemPlatform(p Device, key string) SystemPlatform {
+	return &systemplatform{
 		// parent
 		parent: p,
 		// children
-		InterfaceSubinterface: make(map[string]InterfaceSubinterface),
 		// data key
-		//Interface: &nddav1alpha1.Interface{
+		//SystemPlatform: &nddav1alpha1.SystemPlatform{
 		//	Name: &name,
 		//},
 	}
 }
 
-type itfce struct {
+type systemplatform struct {
 	// parent
 	parent Device
 	// children
-	InterfaceSubinterface map[string]InterfaceSubinterface
 	// Data
-	Interface *nddav1alpha1.Interface
+	SystemPlatform *nddav1alpha1.SystemPlatform
 }
 
 // children
-func (x *itfce) NewInterfaceSubinterface(key string) InterfaceSubinterface {
-	if _, ok := x.InterfaceSubinterface[key]; !ok {
-		x.InterfaceSubinterface[key] = NewInterfaceSubinterface(x, key)
-	}
-	return x.InterfaceSubinterface[key]
-}
-
 // Data
-func (x *itfce) Update(d *nddav1alpha1.Interface) {
-	x.Interface = d
+func (x *systemplatform) Update(d *nddav1alpha1.SystemPlatform) {
+	x.SystemPlatform = d
 }

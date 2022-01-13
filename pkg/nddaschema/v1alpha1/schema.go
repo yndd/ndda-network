@@ -14,10 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package ndda
+package nddaschema
 
 type Schema interface {
 	NewDevice(name string) Device
+	GetDevices() map[string]Device
 }
 
 func NewSchema() Schema {
@@ -41,4 +42,8 @@ func (x *schema) NewDevice(name string) Device {
 		x.devices[name] = NewDevice(x, name)
 	}
 	return x.devices[name]
+}
+
+func (x *schema) GetDevices() map[string]Device {
+	return x.devices
 }

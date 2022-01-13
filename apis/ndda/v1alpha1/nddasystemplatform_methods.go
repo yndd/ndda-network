@@ -28,8 +28,8 @@ import (
 type E_SystemPlatformKind string
 
 const (
-	SystemPlatformKind_SRL  E_SystemPlatformKind = "SRL"
-	SystemPlatformKind_SROS E_SystemPlatformKind = "SROS"
+	E_SystemPlatformKind_SRL  E_SystemPlatformKind = "SRL"
+	E_SystemPlatformKind_SROS E_SystemPlatformKind = "SROS"
 )
 
 func NewSystemPlatform() *SystemPlatformConfig {

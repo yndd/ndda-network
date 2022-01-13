@@ -14,13 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package ndda
+package nddaschema
 
 type Device interface {
 	// methods children
 	NewInterface(key string) Interface
 	NewNetworkInstance(key string) NetworkInstance
 	NewSystemPlatform(key string) SystemPlatform
+	GetInterfaces() map[string]Interface
+	GetNetworkInstances() map[string]NetworkInstance
+	GetSystemPlatforms() map[string]SystemPlatform
 	// methods data
 }
 
@@ -67,4 +70,13 @@ func (x *device) NewSystemPlatform(key string) SystemPlatform {
 		x.SystemPlatform[key] = NewSystemPlatform(x, key)
 	}
 	return x.SystemPlatform[key]
+}
+func (x *device) GetInterfaces() map[string]Interface {
+	return x.Interface
+}
+func (x *device) GetNetworkInstances() map[string]NetworkInstance {
+	return x.NetworkInstance
+}
+func (x *device) GetSystemPlatforms() map[string]SystemPlatform {
+	return x.SystemPlatform
 }

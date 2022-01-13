@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package ndda
+package nddaschema
 
 import (
 	nddav1alpha1 "github.com/yndd/ndda-network/apis/ndda/v1alpha1"

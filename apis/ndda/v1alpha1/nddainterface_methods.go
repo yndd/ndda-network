@@ -28,11 +28,11 @@ import (
 type E_InterfaceKind string
 
 const (
-	InterfaceKind_INTERFACE E_InterfaceKind = "INTERFACE"
-	InterfaceKind_IRB       E_InterfaceKind = "IRB"
-	InterfaceKind_LOOPBACK  E_InterfaceKind = "LOOPBACK"
-	InterfaceKind_MPLS      E_InterfaceKind = "MPLS"
-	InterfaceKind_VXLAN     E_InterfaceKind = "VXLAN"
+	E_InterfaceKind_INTERFACE E_InterfaceKind = "INTERFACE"
+	E_InterfaceKind_IRB       E_InterfaceKind = "IRB"
+	E_InterfaceKind_LOOPBACK  E_InterfaceKind = "LOOPBACK"
+	E_InterfaceKind_MPLS      E_InterfaceKind = "MPLS"
+	E_InterfaceKind_VXLAN     E_InterfaceKind = "VXLAN"
 )
 
 func NewInterface() *InterfaceConfig {

@@ -28,8 +28,8 @@ import (
 type E_InterfaceSubinterfaceKind string
 
 const (
-	InterfaceSubinterfaceKind_BRIDGED E_InterfaceSubinterfaceKind = "BRIDGED"
-	InterfaceSubinterfaceKind_ROUTED  E_InterfaceSubinterfaceKind = "ROUTED"
+	E_InterfaceSubinterfaceKind_BRIDGED E_InterfaceSubinterfaceKind = "BRIDGED"
+	E_InterfaceSubinterfaceKind_ROUTED  E_InterfaceSubinterfaceKind = "ROUTED"
 )
 
 func NewInterfaceSubinterface() *InterfaceSubinterfaceConfig {
