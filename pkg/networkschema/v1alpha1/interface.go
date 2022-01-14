@@ -135,9 +135,9 @@ func (x *itfce) buildNddaNetworkInterface(mg resource.Managed, deviceName string
 	labels[networkv1alpha1.LabelNddaItfce] = itfceName
 	return &networkv1alpha1.NetworkInterface{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      resourceName,
-			Namespace: mg.GetNamespace(),
-			Labels: labels,
+			Name:            resourceName,
+			Namespace:       mg.GetNamespace(),
+			Labels:          labels,
 			OwnerReferences: []metav1.OwnerReference{meta.AsController(meta.TypedReferenceTo(mg, mg.GetObjectKind().GroupVersionKind()))},
 		},
 		Spec: networkv1alpha1.InterfaceSpec{
@@ -178,20 +178,23 @@ func (x *itfce) ListResources(ctx context.Context, mg resource.Managed, resource
 }
 
 func (x *itfce) ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error {
-	itfceName := strings.ReplaceAll(*x.Interface.Name, "/", "-")
+	if x.Get() != nil {
+		itfceName := strings.ReplaceAll(*x.Get().Name, "/", "-")
 
-	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
-		[]string{deviceName, itfceName})
+		resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
+			[]string{deviceName, itfceName})
 
-	if r, ok := resources[networkv1alpha1.InterfaceKindKind]; ok {
-		delete(r, resourceName)
-	}
+		if r, ok := resources[networkv1alpha1.InterfaceKindKind]; ok {
+			delete(r, resourceName)
+		}
 
-	for _, i := range x.GetInterfaceSubinterfaces() {
-		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
-			return err
+		for _, i := range x.GetInterfaceSubinterfaces() {
+			if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
+				return err
+			}
 		}
 	}
+
 	return nil
 }
 
