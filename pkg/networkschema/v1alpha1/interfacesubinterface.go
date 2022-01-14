@@ -17,10 +17,22 @@ limitations under the License.
 package networkschema
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
+	"github.com/pkg/errors"
+	"github.com/yndd/ndd-runtime/pkg/meta"
 	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
+	"github.com/yndd/nddo-runtime/pkg/odns"
+	"github.com/yndd/nddo-runtime/pkg/resource"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
+const (
+	errCreateInterfaceSubInterface = "cannot create Interface SubInterface"
+	errDeleteInterfaceSubInterface = "cannot delete Interface SubInterface"
+	errGetInterfaceSubInterface    = "cannot get Interface SubInterface"
 )
 
 type InterfaceSubinterface interface {
@@ -30,10 +42,12 @@ type InterfaceSubinterface interface {
 	AddInterfaceSubinterfaceIpv4(ai *networkv1alpha1.InterfaceSubinterfaceIpv4)
 	AddInterfaceSubinterfaceIpv6(ai *networkv1alpha1.InterfaceSubinterfaceIpv6)
 	Print(itfceName string, n int)
+	ImplementSchema(ctx context.Context, mg resource.Managed, deviceName, deplPolicy string) error
 }
 
-func NewInterfaceSubinterface(p Interface, key string) InterfaceSubinterface {
+func NewInterfaceSubinterface(c resource.ClientApplicator, p Interface, key string) InterfaceSubinterface {
 	return &interfacesubinterface{
+		client: c,
 		// parent
 		parent: p,
 		// children
@@ -45,6 +59,7 @@ func NewInterfaceSubinterface(p Interface, key string) InterfaceSubinterface {
 }
 
 type interfacesubinterface struct {
+	client resource.ClientApplicator
 	// parent
 	parent Interface
 	// children
@@ -77,5 +92,39 @@ func (x *interfacesubinterface) Print(siName string, n int) {
 	}
 	for _, prefix := range x.InterfaceSubinterface.Ipv6 {
 		fmt.Printf("%s IpPrefix: %s\n", strings.Repeat(" ", n), *prefix.IpPrefix)
+	}
+}
+
+func (x *interfacesubinterface) ImplementSchema(ctx context.Context, mg resource.Managed, deviceName, deplPolicy string) error {
+	o := x.buildNddaNetworkInterfaceSubInterface(mg, deviceName, deplPolicy)
+	if err := x.client.Apply(ctx, o); err != nil {
+		return errors.Wrap(err, errCreateInterfaceSubInterface)
+	}
+	return nil
+}
+
+func (x *interfacesubinterface) buildNddaNetworkInterfaceSubInterface(mg resource.Managed, deviceName, deplPolicy string) *networkv1alpha1.NetworkInterfaceSubinterface {
+	index := strings.ReplaceAll(*x.InterfaceSubinterface.Index, "/", "-")
+	itfceName := strings.ReplaceAll(*x.parent.Get().Name, "/", "-")
+
+	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
+		[]string{deviceName, itfceName, index})
+
+	return &networkv1alpha1.NetworkInterfaceSubinterface{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      resourceName,
+			Namespace: mg.GetNamespace(),
+			Labels: map[string]string{
+				networkv1alpha1.LabelNddaDeploymentPolicy: deplPolicy,
+				networkv1alpha1.LabelNddaOwner:            odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind)),
+				networkv1alpha1.LabelNddaDevice:           deviceName,
+				networkv1alpha1.LabelNddaItfce:            itfceName,
+			},
+			OwnerReferences: []metav1.OwnerReference{meta.AsController(meta.TypedReferenceTo(mg, mg.GetObjectKind().GroupVersionKind()))},
+		},
+		Spec: networkv1alpha1.InterfaceSubinterfaceSpec{
+			InterfaceName:         x.parent.Get().Name,
+			InterfaceSubinterface: x.InterfaceSubinterface,
+		},
 	}
 }

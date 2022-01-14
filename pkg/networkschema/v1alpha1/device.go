@@ -17,24 +17,29 @@ limitations under the License.
 package networkschema
 
 import (
+	"context"
 	"fmt"
 	"strings"
+
+	"github.com/yndd/nddo-runtime/pkg/resource"
 )
 
 type Device interface {
 	// methods children
-	NewInterface(key string) Interface
-	NewNetworkInstance(key string) NetworkInstance
-	NewSystemPlatform(key string) SystemPlatform
+	NewInterface(c resource.ClientApplicator, key string) Interface
+	NewNetworkInstance(c resource.ClientApplicator, key string) NetworkInstance
+	NewSystemPlatform(c resource.ClientApplicator, key string) SystemPlatform
 	GetInterfaces() map[string]Interface
 	GetNetworkInstances() map[string]NetworkInstance
 	GetSystemPlatforms() map[string]SystemPlatform
 	// methods data
 	Print(nodeName string, n int)
+	ImplementSchema(ctx context.Context, mg resource.Managed, deviceName, deplPolicy string) error
 }
 
-func NewDevice(p Schema, key string) Device {
+func NewDevice(c resource.ClientApplicator, p Schema, key string) Device {
 	return &device{
+		client: c,
 		// parent
 		parent: p,
 		// children
@@ -49,6 +54,7 @@ func NewDevice(p Schema, key string) Device {
 }
 
 type device struct {
+	client resource.ClientApplicator
 	// parent
 	parent Schema
 	// children
@@ -59,21 +65,21 @@ type device struct {
 }
 
 // children
-func (x *device) NewInterface(key string) Interface {
+func (x *device) NewInterface(c resource.ClientApplicator, key string) Interface {
 	if _, ok := x.Interface[key]; !ok {
-		x.Interface[key] = NewInterface(x, key)
+		x.Interface[key] = NewInterface(x.client, x, key)
 	}
 	return x.Interface[key]
 }
-func (x *device) NewNetworkInstance(key string) NetworkInstance {
+func (x *device) NewNetworkInstance(c resource.ClientApplicator, key string) NetworkInstance {
 	if _, ok := x.NetworkInstance[key]; !ok {
-		x.NetworkInstance[key] = NewNetworkInstance(x, key)
+		x.NetworkInstance[key] = NewNetworkInstance(x.client, x, key)
 	}
 	return x.NetworkInstance[key]
 }
-func (x *device) NewSystemPlatform(key string) SystemPlatform {
+func (x *device) NewSystemPlatform(c resource.ClientApplicator, key string) SystemPlatform {
 	if _, ok := x.SystemPlatform[key]; !ok {
-		x.SystemPlatform[key] = NewSystemPlatform(x, key)
+		x.SystemPlatform[key] = NewSystemPlatform(x.client, x, key)
 	}
 	return x.SystemPlatform[key]
 }
@@ -96,4 +102,19 @@ func (x *device) Print(nodeName string, n int) {
 	for niName, ni := range x.GetNetworkInstances() {
 		ni.Print(niName, n)
 	}
+}
+
+func (x *device) ImplementSchema(ctx context.Context, mg resource.Managed, deviceName, deplPolicy string) error {
+	for _, i := range x.GetInterfaces() {
+		if err := i.ImplementSchema(ctx, mg, deviceName, deplPolicy); err != nil {
+			return err
+		}
+	}
+	for _, ni := range x.GetNetworkInstances() {
+		if err := ni.ImplementSchema(ctx, mg, deviceName, deplPolicy); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

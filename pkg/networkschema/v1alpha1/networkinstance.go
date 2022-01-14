@@ -17,10 +17,22 @@ limitations under the License.
 package networkschema
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
+	"github.com/pkg/errors"
+	"github.com/yndd/ndd-runtime/pkg/meta"
 	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
+	"github.com/yndd/nddo-runtime/pkg/odns"
+	"github.com/yndd/nddo-runtime/pkg/resource"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
+const (
+	errCreateNetworkInstance = "cannot create NetworkInstance"
+	errDeleteNetworkInstance = "cannot delete NetworkInstance"
+	errGetNetworkInstance    = "cannot get NetworkInstance"
 )
 
 type NetworkInstance interface {
@@ -30,10 +42,12 @@ type NetworkInstance interface {
 	AddNetworkInstanceInterface(ai *networkv1alpha1.NetworkInstanceConfigInterface)
 
 	Print(niName string, n int)
+	ImplementSchema(ctx context.Context, mg resource.Managed, deviceName, deplPolicy string) error
 }
 
-func NewNetworkInstance(p Device, key string) NetworkInstance {
+func NewNetworkInstance(c resource.ClientApplicator, p Device, key string) NetworkInstance {
 	return &networkinstance{
+		client: c,
 		// parent
 		parent: p,
 		// children
@@ -45,6 +59,7 @@ func NewNetworkInstance(p Device, key string) NetworkInstance {
 }
 
 type networkinstance struct {
+	client resource.ClientApplicator
 	// parent
 	parent Device
 	// children
@@ -68,5 +83,34 @@ func (x *networkinstance) Print(niName string, n int) {
 	n++
 	for _, itfce := range x.NetworkInstance.Config.Interface {
 		fmt.Printf("%s %s\n", strings.Repeat(" ", n), *itfce.Name)
+	}
+}
+
+func (x *networkinstance) ImplementSchema(ctx context.Context, mg resource.Managed, deviceName, deplPolicy string) error {
+	o := x.buildNddaNetworkInstance(mg, deviceName, deplPolicy)
+	if err := x.client.Apply(ctx, o); err != nil {
+		return errors.Wrap(err, errCreateNetworkInstance)
+	}
+	return nil
+}
+
+func (x *networkinstance) buildNddaNetworkInstance(mg resource.Managed, deviceName, deplPolicy string) *networkv1alpha1.NetworkNetworkInstance {
+	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
+		[]string{deviceName})
+
+	return &networkv1alpha1.NetworkNetworkInstance{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      resourceName,
+			Namespace: mg.GetNamespace(),
+			Labels: map[string]string{
+				networkv1alpha1.LabelNddaDeploymentPolicy: deplPolicy,
+				networkv1alpha1.LabelNddaOwner:            odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind)),
+				networkv1alpha1.LabelNddaDevice:           deviceName,
+			},
+			OwnerReferences: []metav1.OwnerReference{meta.AsController(meta.TypedReferenceTo(mg, mg.GetObjectKind().GroupVersionKind()))},
+		},
+		Spec: networkv1alpha1.NetworkInstanceSpec{
+			NetworkInstance: x.NetworkInstance,
+		},
 	}
 }

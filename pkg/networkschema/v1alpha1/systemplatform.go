@@ -18,6 +18,7 @@ package networkschema
 
 import (
 	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
+	"github.com/yndd/nddo-runtime/pkg/resource"
 )
 
 type SystemPlatform interface {
@@ -26,8 +27,9 @@ type SystemPlatform interface {
 	Update(x *networkv1alpha1.SystemPlatform)
 }
 
-func NewSystemPlatform(p Device, key string) SystemPlatform {
+func NewSystemPlatform(c resource.ClientApplicator, p Device, key string) SystemPlatform {
 	return &systemplatform{
+		client: c,
 		// parent
 		parent: p,
 		// children
@@ -39,6 +41,7 @@ func NewSystemPlatform(p Device, key string) SystemPlatform {
 }
 
 type systemplatform struct {
+	client resource.ClientApplicator
 	// parent
 	parent Device
 	// children

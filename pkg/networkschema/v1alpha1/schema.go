@@ -16,16 +16,23 @@ limitations under the License.
 
 package networkschema
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+
+	"github.com/yndd/nddo-runtime/pkg/resource"
+)
 
 type Schema interface {
-	NewDevice(name string) Device
+	NewDevice(c resource.ClientApplicator, name string) Device
 	GetDevices() map[string]Device
 	PrintDevices(n string)
+	ImplementSchema(ctx context.Context, mg resource.Managed, deplPolicy string) error
 }
 
-func NewSchema() Schema {
+func NewSchema(c resource.ClientApplicator) Schema {
 	return &schema{
+		client: c,
 		// parent nil
 		// children
 		devices: make(map[string]Device),
@@ -34,15 +41,16 @@ func NewSchema() Schema {
 }
 
 type schema struct {
+	client resource.ClientApplicator
 	// parent is nil
 	// children
 	devices map[string]Device
 	// data is nil
 }
 
-func (x *schema) NewDevice(name string) Device {
+func (x *schema) NewDevice(c resource.ClientApplicator, name string) Device {
 	if _, ok := x.devices[name]; !ok {
-		x.devices[name] = NewDevice(x, name)
+		x.devices[name] = NewDevice(c, x, name)
 	}
 	return x.devices[name]
 }
@@ -56,4 +64,13 @@ func (x *schema) PrintDevices(n string) {
 	for deviceName, d := range x.GetDevices() {
 		d.Print(deviceName, 1)
 	}
+}
+
+func (x *schema) ImplementSchema(ctx context.Context, mg resource.Managed, deplPolicy string) error {
+	for deviceName, d := range x.GetDevices() {
+		if err := d.ImplementSchema(ctx, mg, deviceName, deplPolicy); err != nil {
+			return err
+		}
+	}
+	return nil
 }
