@@ -45,7 +45,7 @@ type Interface interface {
 	Get() *networkv1alpha1.Interface
 
 	Print(itfceName string, n int)
-	DeploySchema(ctx context.Context, mg resource.Managed, deviceName string) error
+	DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error
@@ -108,14 +108,14 @@ func (x *itfce) Print(itfceName string, n int) {
 	}
 }
 
-func (x *itfce) DeploySchema(ctx context.Context, mg resource.Managed, deviceName string) error {
-	o := x.buildNddaNetworkInterface(mg, deviceName)
+func (x *itfce) DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error {
+	o := x.buildNddaNetworkInterface(mg, deviceName, labels)
 	if err := x.client.Apply(ctx, o); err != nil {
 		return errors.Wrap(err, errCreateInterface)
 	}
 
 	for _, r := range x.GetInterfaceSubinterfaces() {
-		if err := r.DeploySchema(ctx, mg, deviceName); err != nil {
+		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
 			return err
 		}
 	}
@@ -123,22 +123,21 @@ func (x *itfce) DeploySchema(ctx context.Context, mg resource.Managed, deviceNam
 	return nil
 }
 
-func (x *itfce) buildNddaNetworkInterface(mg resource.Managed, deviceName string) *networkv1alpha1.NetworkInterface {
+func (x *itfce) buildNddaNetworkInterface(mg resource.Managed, deviceName string, labels map[string]string) *networkv1alpha1.NetworkInterface {
 	itfceName := strings.ReplaceAll(*x.Interface.Name, "/", "-")
 
 	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
 		[]string{deviceName, itfceName})
 
+	labels[networkv1alpha1.LabelNddaDeploymentPolicy] = string(mg.GetDeploymentPolicy())
+	labels[networkv1alpha1.LabelNddaOwner] = odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))
+	labels[networkv1alpha1.LabelNddaDevice] = deviceName
+	labels[networkv1alpha1.LabelNddaItfce] = itfceName
 	return &networkv1alpha1.NetworkInterface{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      resourceName,
 			Namespace: mg.GetNamespace(),
-			Labels: map[string]string{
-				networkv1alpha1.LabelNddaDeploymentPolicy: string(mg.GetDeploymentPolicy()),
-				networkv1alpha1.LabelNddaOwner:            odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind)),
-				networkv1alpha1.LabelNddaDevice:           deviceName,
-				networkv1alpha1.LabelNddaItfce:            itfceName,
-			},
+			Labels: labels,
 			OwnerReferences: []metav1.OwnerReference{meta.AsController(meta.TypedReferenceTo(mg, mg.GetObjectKind().GroupVersionKind()))},
 		},
 		Spec: networkv1alpha1.InterfaceSpec{

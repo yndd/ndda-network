@@ -34,7 +34,7 @@ type Device interface {
 	GetSystemPlatforms() map[string]SystemPlatform
 	// methods data
 	Print(nodeName string, n int)
-	DeploySchema(ctx context.Context, mg resource.Managed, deviceName string) error
+	DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error
@@ -108,14 +108,14 @@ func (x *device) Print(nodeName string, n int) {
 	}
 }
 
-func (x *device) DeploySchema(ctx context.Context, mg resource.Managed, deviceName string) error {
+func (x *device) DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error {
 	for _, i := range x.GetInterfaces() {
-		if err := i.DeploySchema(ctx, mg, deviceName); err != nil {
+		if err := i.DeploySchema(ctx, mg, deviceName, labels); err != nil {
 			return err
 		}
 	}
 	for _, ni := range x.GetNetworkInstances() {
-		if err := ni.DeploySchema(ctx, mg, deviceName); err != nil {
+		if err := ni.DeploySchema(ctx, mg, deviceName, labels); err != nil {
 			return err
 		}
 	}

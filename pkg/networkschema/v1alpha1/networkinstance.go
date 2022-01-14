@@ -43,7 +43,7 @@ type NetworkInstance interface {
 	AddNetworkInstanceInterface(ai *networkv1alpha1.NetworkInstanceConfigInterface)
 
 	Print(niName string, n int)
-	DeploySchema(ctx context.Context, mg resource.Managed, deviceName string) error
+	DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error
@@ -97,27 +97,27 @@ func (x *networkinstance) Print(niName string, n int) {
 	}
 }
 
-func (x *networkinstance) DeploySchema(ctx context.Context, mg resource.Managed, deviceName string) error {
-	o := x.buildNddaNetworkInstance(mg, deviceName)
+func (x *networkinstance) DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error {
+	o := x.buildNddaNetworkInstance(mg, deviceName, labels)
 	if err := x.client.Apply(ctx, o); err != nil {
 		return errors.Wrap(err, errCreateNetworkInstance)
 	}
 	return nil
 }
 
-func (x *networkinstance) buildNddaNetworkInstance(mg resource.Managed, deviceName string) *networkv1alpha1.NetworkNetworkInstance {
+func (x *networkinstance) buildNddaNetworkInstance(mg resource.Managed, deviceName string, labels map[string]string) *networkv1alpha1.NetworkNetworkInstance {
 	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
 		[]string{deviceName})
 
+	labels[networkv1alpha1.LabelNddaDeploymentPolicy] = string(mg.GetDeploymentPolicy())
+	labels[networkv1alpha1.LabelNddaOwner] = odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))
+	labels[networkv1alpha1.LabelNddaDevice] = deviceName
+	
 	return &networkv1alpha1.NetworkNetworkInstance{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      resourceName,
-			Namespace: mg.GetNamespace(),
-			Labels: map[string]string{
-				networkv1alpha1.LabelNddaDeploymentPolicy: string(mg.GetDeploymentPolicy()),
-				networkv1alpha1.LabelNddaOwner:            odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind)),
-				networkv1alpha1.LabelNddaDevice:           deviceName,
-			},
+			Name:            resourceName,
+			Namespace:       mg.GetNamespace(),
+			Labels:          labels,
 			OwnerReferences: []metav1.OwnerReference{meta.AsController(meta.TypedReferenceTo(mg, mg.GetObjectKind().GroupVersionKind()))},
 		},
 		Spec: networkv1alpha1.NetworkInstanceSpec{
