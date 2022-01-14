@@ -196,9 +196,9 @@ func (x *itfce) ValidateResources(ctx context.Context, mg resource.Managed, devi
 	return nil
 }
 
-func (x *itfce) DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{})  error {
+func (x *itfce) DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error {
 	if res, ok := resources[networkv1alpha1.InterfaceKindKind]; ok {
-		for resName := range res{
+		for resName := range res {
 			o := &networkv1alpha1.NetworkInterface{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      resName,
@@ -210,7 +210,7 @@ func (x *itfce) DeleteResources(ctx context.Context, mg resource.Managed, resour
 			}
 		}
 	}
-	
+
 	for _, i := range x.GetInterfaceSubinterfaces() {
 		if err := i.DeleteResources(ctx, mg, resources); err != nil {
 			return err

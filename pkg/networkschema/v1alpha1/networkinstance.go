@@ -46,7 +46,7 @@ type NetworkInstance interface {
 	DeploySchema(ctx context.Context, mg resource.Managed, deviceName string) error
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
-	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{})  error 
+	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error
 	DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 }
 
@@ -147,21 +147,20 @@ func (x *networkinstance) ListResources(ctx context.Context, mg resource.Managed
 	return nil
 }
 
-func (x *networkinstance) ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{})  error {
+func (x *networkinstance) ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error {
 	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
 		[]string{deviceName})
 
 	if r, ok := resources[networkv1alpha1.NetworkInstanceKindKind]; ok {
 		delete(r, resourceName)
 	}
-	
 
 	return nil
 }
 
-func (x *networkinstance) DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{})  error {
+func (x *networkinstance) DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error {
 	if res, ok := resources[networkv1alpha1.NetworkInstanceKindKind]; ok {
-		for resName := range res{
+		for resName := range res {
 			o := &networkv1alpha1.NetworkNetworkInstance{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      resName,

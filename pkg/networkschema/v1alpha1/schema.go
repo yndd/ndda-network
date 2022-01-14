@@ -79,7 +79,7 @@ func (x *schema) DeploySchema(ctx context.Context, mg resource.Managed) error {
 	return nil
 }
 
-func (x *schema) InitializeDummySchema()  {
+func (x *schema) InitializeDummySchema() {
 	d := x.NewDevice(x.client, "dummy")
 	d.InitializeDummySchema()
 }

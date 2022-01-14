@@ -1,6 +1,8 @@
 package ndda
 
 import (
+	"fmt"
+
 	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 	"github.com/yndd/ndda-network/pkg/ndda/itfceinfo"
 	networkschema "github.com/yndd/ndda-network/pkg/networkschema/v1alpha1"
@@ -77,11 +79,11 @@ func (x *selectedNodeItfces) GetSelectedNodeItfces() map[string][]itfceinfo.Itfc
 
 func (x *selectedNodeItfces) GetNodeItfcesByEpgSelector(epgSelectors []*nddov1.EpgInfo, nddaItfceList networkv1alpha1.IFNetworkInterfaceList) {
 	for _, nddaItfce := range nddaItfceList.GetInterfaces() {
-		//fmt.Printf("getNodeItfcesByEpgSelector: epg: %s, itfceepg: %s, nodename: %s, itfcename: %s, lagmember: %t\n", epg, nddaItfce.GetEndpointGroup(), nddaItfce.GetNodeName(), nddaItfce.GetInterfaceName(), nddaItfce.GetLagMember())
+		fmt.Printf("getNodeItfcesByEpgSelector: itfceepg: %s, nodename: %s, itfcename: %s, lagmember: %t\n", nddaItfce.GetEndpointGroup(), nddaItfce.GetDeviceName(), nddaItfce.GetInterfaceName(), nddaItfce.GetInterfaceConfigLagMember())
 		// TODO add specifc endpoint group selector
 		for _, epgSelector := range epgSelectors {
 			if epgSelector.EpgName != "" && nddaItfce.GetEndpointGroup() == epgSelector.EpgName {
-				//fmt.Printf("getNodeItfcesByEpgSelector: %s\n", nddaItfce.GetName())
+				fmt.Printf("getNodeItfcesByEpgSelector: %s\n", nddaItfce.GetName())
 				// avoid selecting lag members
 				if !nddaItfce.GetInterfaceConfigLagMember() {
 					x.addNodeItfce(nddaItfce.GetDeviceName(), nddaItfce.GetInterfaceName(), itfceinfo.NewItfceInfo(
@@ -100,10 +102,10 @@ func (x *selectedNodeItfces) GetNodeItfcesByEpgSelector(epgSelectors []*nddov1.E
 func (x *selectedNodeItfces) GetNodeItfcesByNodeItfceSelector(nodeItfceSelectors map[string]*nddov1.ItfceInfo, nddaItfceList networkv1alpha1.IFNetworkInterfaceList) {
 	for _, nddaItfce := range nddaItfceList.GetInterfaces() {
 		for deviceName, itfceInfo := range nodeItfceSelectors {
-			//fmt.Printf("getNodeItfcesByNodeItfceSelector: nodename: %s, itfcename: %s, lagmember: %t, nodename: %s\n", nddaItfce.GetNodeName(), nddaItfce.GetInterfaceName(), nddaItfce.GetLagMember(), nodeName)
+			fmt.Printf("getNodeItfcesByNodeItfceSelector: nodename: %s, itfcename: %s, lagmember: %t, nodename: %s\n", nddaItfce.GetDeviceName(), nddaItfce.GetInterfaceName(), nddaItfce.GetInterfaceConfigLagMember(), deviceName)
 			// avoid selecting lag members
 			if !nddaItfce.GetInterfaceConfigLagMember() && nddaItfce.GetDeviceName() == deviceName && nddaItfce.GetInterfaceName() == itfceInfo.ItfceName {
-				//fmt.Printf("getNodeItfcesByNodeItfceSelector: nodename: %s, itfcename: %s, lagmember: %t, nodename: %s\n", nddaItfce.GetNodeName(), nddaItfce.GetInterfaceName(), nddaItfce.GetLagMember(), nodeName)
+				fmt.Printf("getNodeItfcesByNodeItfceSelector: nodename: %s, itfcename: %s, lagmember: %t, nodename: %s\n", nddaItfce.GetDeviceName(), nddaItfce.GetInterfaceName(), nddaItfce.GetInterfaceConfigLagMember(), deviceName)
 				x.addNodeItfce(nddaItfce.GetDeviceName(), nddaItfce.GetInterfaceName(), itfceinfo.NewItfceInfo(
 					itfceinfo.WithInnerVlanId(itfceInfo.InnerVlanId),
 					itfceinfo.WithOuterVlanId(itfceInfo.OuterVlanId),

@@ -37,7 +37,7 @@ type Device interface {
 	DeploySchema(ctx context.Context, mg resource.Managed, deviceName string) error
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
-	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{})  error 
+	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error
 	DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 }
 
@@ -123,14 +123,14 @@ func (x *device) DeploySchema(ctx context.Context, mg resource.Managed, deviceNa
 	return nil
 }
 
-func (x *device) InitializeDummySchema()  {
+func (x *device) InitializeDummySchema() {
 	i := x.NewInterface(x.client, "dummy")
 	i.InitializeDummySchema()
 	ni := x.NewNetworkInstance(x.client, "dummy")
 	ni.InitializeDummySchema()
 	p := x.NewSystemPlatform(x.client, "dummy")
 	p.InitializeDummySchema()
-	
+
 }
 
 func (x *device) ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error {
@@ -152,7 +152,7 @@ func (x *device) ListResources(ctx context.Context, mg resource.Managed, resourc
 	return nil
 }
 
-func (x *device) ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{})  error {
+func (x *device) ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error {
 	for _, i := range x.GetInterfaces() {
 		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
 			return err
@@ -171,7 +171,7 @@ func (x *device) ValidateResources(ctx context.Context, mg resource.Managed, dev
 	return nil
 }
 
-func (x *device) DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{})  error {
+func (x *device) DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error {
 	for _, i := range x.GetInterfaces() {
 		if err := i.DeleteResources(ctx, mg, resources); err != nil {
 			return err
