@@ -17,6 +17,9 @@ limitations under the License.
 package networkschema
 
 import (
+	"fmt"
+	"strings"
+
 	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 )
 
@@ -25,6 +28,8 @@ type NetworkInstance interface {
 	// methods data
 	Update(x *networkv1alpha1.NetworkInstance)
 	AddNetworkInstanceInterface(ai *networkv1alpha1.NetworkInstanceConfigInterface)
+
+	Print(niName string, n int)
 }
 
 func NewNetworkInstance(p Device, key string) NetworkInstance {
@@ -56,4 +61,12 @@ func (x *networkinstance) Update(d *networkv1alpha1.NetworkInstance) {
 // NetworkInstance interface network-instance-config NetworkInstance [network-instance config]
 func (x *networkinstance) AddNetworkInstanceInterface(ai *networkv1alpha1.NetworkInstanceConfigInterface) {
 	x.NetworkInstance.Config.Interface = append(x.NetworkInstance.Config.Interface, ai)
+}
+
+func (x *networkinstance) Print(niName string, n int) {
+	fmt.Printf("%s Ni Name: %s Kind: %s\n", strings.Repeat(" ", n), niName, *x.NetworkInstance.Name)
+	n++
+	for _, itfce := range x.NetworkInstance.Config.Interface {
+		fmt.Printf("%s %s\n", strings.Repeat(" ", n), *itfce.Name)
+	}
 }

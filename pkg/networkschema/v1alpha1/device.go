@@ -16,6 +16,11 @@ limitations under the License.
 
 package networkschema
 
+import (
+	"fmt"
+	"strings"
+)
+
 type Device interface {
 	// methods children
 	NewInterface(key string) Interface
@@ -25,6 +30,7 @@ type Device interface {
 	GetNetworkInstances() map[string]NetworkInstance
 	GetSystemPlatforms() map[string]SystemPlatform
 	// methods data
+	Print(nodeName string, n int)
 }
 
 func NewDevice(p Schema, key string) Device {
@@ -79,4 +85,15 @@ func (x *device) GetNetworkInstances() map[string]NetworkInstance {
 }
 func (x *device) GetSystemPlatforms() map[string]SystemPlatform {
 	return x.SystemPlatform
+}
+
+func (x *device) Print(nodeName string, n int) {
+	fmt.Printf("%s Node Name: %s\n", nodeName, strings.Repeat(" ", n))
+	n++
+	for itfceName, i := range x.GetInterfaces() {
+		i.Print(itfceName, n)
+	}
+	for niName, ni := range x.GetNetworkInstances() {
+		ni.Print(niName, n)
+	}
 }

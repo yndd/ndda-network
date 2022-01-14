@@ -17,6 +17,9 @@ limitations under the License.
 package networkschema
 
 import (
+	"fmt"
+	"strings"
+
 	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 )
 
@@ -26,6 +29,7 @@ type InterfaceSubinterface interface {
 	Update(x *networkv1alpha1.InterfaceSubinterface)
 	AddInterfaceSubinterfaceIpv4(ai *networkv1alpha1.InterfaceSubinterfaceIpv4)
 	AddInterfaceSubinterfaceIpv6(ai *networkv1alpha1.InterfaceSubinterfaceIpv6)
+	Print(itfceName string, n int)
 }
 
 func NewInterfaceSubinterface(p Interface, key string) InterfaceSubinterface {
@@ -62,4 +66,16 @@ func (x *interfacesubinterface) AddInterfaceSubinterfaceIpv4(ai *networkv1alpha1
 // InterfaceSubinterface ipv6 subinterface Subinterface [subinterface]
 func (x *interfacesubinterface) AddInterfaceSubinterfaceIpv6(ai *networkv1alpha1.InterfaceSubinterfaceIpv6) {
 	x.InterfaceSubinterface.Ipv6 = append(x.InterfaceSubinterface.Ipv6, ai)
+}
+
+func (x *interfacesubinterface) Print(siName string, n int) {
+	fmt.Printf("%s SubInterface: %s Kind: %s OuterTag: %d\n", strings.Repeat(" ", n), siName, x.InterfaceSubinterface.Config.Kind, *x.InterfaceSubinterface.DeepCopy().Config.OuterVlanId)
+	n++
+	fmt.Printf("%s Local Addressing Info\n", strings.Repeat(" ", n))
+	for _, prefix := range x.InterfaceSubinterface.Ipv4 {
+		fmt.Printf("%s IpPrefix: %s\n", strings.Repeat(" ", n), *prefix.IpPrefix)
+	}
+	for _, prefix := range x.InterfaceSubinterface.Ipv6 {
+		fmt.Printf("%s IpPrefix: %s\n", strings.Repeat(" ", n), *prefix.IpPrefix)
+	}
 }

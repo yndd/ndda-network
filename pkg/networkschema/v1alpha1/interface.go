@@ -17,6 +17,9 @@ limitations under the License.
 package networkschema
 
 import (
+	"fmt"
+	"strings"
+
 	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 )
 
@@ -26,6 +29,8 @@ type Interface interface {
 	GetInterfaceSubinterfaces() map[string]InterfaceSubinterface
 	// methods data
 	Update(x *networkv1alpha1.Interface)
+
+	Print(itfceName string, n int)
 }
 
 func NewInterface(p Device, key string) Interface {
@@ -64,4 +69,12 @@ func (x *itfce) GetInterfaceSubinterfaces() map[string]InterfaceSubinterface {
 // Data
 func (x *itfce) Update(d *networkv1alpha1.Interface) {
 	x.Interface = d
+}
+
+func (x *itfce) Print(itfceName string, n int) {
+	fmt.Printf("%s Interface: %s Kind: %s LAG: %t, LAG Member: %t\n", strings.Repeat(" ", n), itfceName,  x.Interface.Config.Kind, *x.Interface.Config.Lag, *x.Interface.Config.LagMember)
+	n++
+	for subItfceName, i := range x.InterfaceSubinterface {
+		i.Print(subItfceName, n)
+	}
 }

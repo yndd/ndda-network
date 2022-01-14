@@ -16,9 +16,12 @@ limitations under the License.
 
 package networkschema
 
+import "fmt"
+
 type Schema interface {
 	NewDevice(name string) Device
 	GetDevices() map[string]Device
+	PrintDevices(n string)
 }
 
 func NewSchema() Schema {
@@ -46,4 +49,11 @@ func (x *schema) NewDevice(name string) Device {
 
 func (x *schema) GetDevices() map[string]Device {
 	return x.devices
+}
+
+func (x *schema) PrintDevices(n string) {
+	fmt.Printf("schema information: %s\n", n)
+	for deviceName, d := range x.GetDevices() {
+		d.Print(deviceName, 1)
+	}
 }
