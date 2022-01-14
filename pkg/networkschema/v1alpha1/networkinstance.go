@@ -43,7 +43,7 @@ type NetworkInstance interface {
 	AddNetworkInstanceInterface(ai *networkv1alpha1.NetworkInstanceConfigInterface)
 
 	Print(niName string, n int)
-	ImplementSchema(ctx context.Context, mg resource.Managed, deviceName string) error
+	DeploySchema(ctx context.Context, mg resource.Managed, deviceName string) error
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{})  error 
@@ -97,7 +97,7 @@ func (x *networkinstance) Print(niName string, n int) {
 	}
 }
 
-func (x *networkinstance) ImplementSchema(ctx context.Context, mg resource.Managed, deviceName string) error {
+func (x *networkinstance) DeploySchema(ctx context.Context, mg resource.Managed, deviceName string) error {
 	o := x.buildNddaNetworkInstance(mg, deviceName)
 	if err := x.client.Apply(ctx, o); err != nil {
 		return errors.Wrap(err, errCreateNetworkInstance)

@@ -27,7 +27,7 @@ type Schema interface {
 	NewDevice(c resource.ClientApplicator, name string) Device
 	GetDevices() map[string]Device
 	PrintDevices(n string)
-	ImplementSchema(ctx context.Context, mg resource.Managed) error
+	DeploySchema(ctx context.Context, mg resource.Managed) error
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed) (map[string]map[string]interface{}, error)
 	ValidateResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) (map[string]map[string]interface{}, error)
@@ -70,9 +70,9 @@ func (x *schema) PrintDevices(n string) {
 	}
 }
 
-func (x *schema) ImplementSchema(ctx context.Context, mg resource.Managed) error {
+func (x *schema) DeploySchema(ctx context.Context, mg resource.Managed) error {
 	for deviceName, d := range x.GetDevices() {
-		if err := d.ImplementSchema(ctx, mg, deviceName); err != nil {
+		if err := d.DeploySchema(ctx, mg, deviceName); err != nil {
 			return err
 		}
 	}

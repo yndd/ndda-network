@@ -43,7 +43,7 @@ type InterfaceSubinterface interface {
 	AddInterfaceSubinterfaceIpv4(ai *networkv1alpha1.InterfaceSubinterfaceIpv4)
 	AddInterfaceSubinterfaceIpv6(ai *networkv1alpha1.InterfaceSubinterfaceIpv6)
 	Print(itfceName string, n int)
-	ImplementSchema(ctx context.Context, mg resource.Managed, deviceName string) error
+	DeploySchema(ctx context.Context, mg resource.Managed, deviceName string) error
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{})  error 
@@ -106,7 +106,7 @@ func (x *interfacesubinterface) Print(siName string, n int) {
 	}
 }
 
-func (x *interfacesubinterface) ImplementSchema(ctx context.Context, mg resource.Managed, deviceName string) error {
+func (x *interfacesubinterface) DeploySchema(ctx context.Context, mg resource.Managed, deviceName string) error {
 	o := x.buildNddaNetworkInterfaceSubInterface(mg, deviceName)
 	if err := x.client.Apply(ctx, o); err != nil {
 		return errors.Wrap(err, errCreateInterfaceSubInterface)

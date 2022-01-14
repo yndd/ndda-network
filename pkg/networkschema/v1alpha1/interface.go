@@ -45,7 +45,7 @@ type Interface interface {
 	Get() *networkv1alpha1.Interface
 
 	Print(itfceName string, n int)
-	ImplementSchema(ctx context.Context, mg resource.Managed, deviceName string) error
+	DeploySchema(ctx context.Context, mg resource.Managed, deviceName string) error
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error
@@ -108,14 +108,14 @@ func (x *itfce) Print(itfceName string, n int) {
 	}
 }
 
-func (x *itfce) ImplementSchema(ctx context.Context, mg resource.Managed, deviceName string) error {
+func (x *itfce) DeploySchema(ctx context.Context, mg resource.Managed, deviceName string) error {
 	o := x.buildNddaNetworkInterface(mg, deviceName)
 	if err := x.client.Apply(ctx, o); err != nil {
 		return errors.Wrap(err, errCreateInterface)
 	}
 
 	for _, r := range x.GetInterfaceSubinterfaces() {
-		if err := r.ImplementSchema(ctx, mg, deviceName); err != nil {
+		if err := r.DeploySchema(ctx, mg, deviceName); err != nil {
 			return err
 		}
 	}
