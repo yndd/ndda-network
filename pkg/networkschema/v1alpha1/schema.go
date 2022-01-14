@@ -29,6 +29,7 @@ type Schema interface {
 	PrintDevices(n string)
 	ImplementSchema(ctx context.Context, mg resource.Managed) error
 	InitializeDummySchema()
+	ListResources(ctx context.Context, mg resource.Managed) (map[string]interface{}, error)
 }
 
 func NewSchema(c resource.ClientApplicator) Schema {
