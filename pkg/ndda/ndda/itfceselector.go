@@ -15,8 +15,10 @@ func (r *handler) GetSelectedNodeItfces(mg resource.Managed, epgSelectors []*ndd
 	// get all ndda interfaces within the oda scope
 	// oda is organization, deployement, availability zone
 	opts := odns.GetClientListOptionFromResourceName(mg.GetName())
+	fmt.Printf("opts: %v\n", opts)
 	nddaItfces := r.newNetworkItfceList()
-	if err := r.client.List(r.ctx, nddaItfces, opts...); err != nil {
+	if err := r.client.List(r.ctx, nddaItfces); err != nil {
+	//if err := r.client.List(r.ctx, nddaItfces, opts...); err != nil {
 		return nil, err
 	}
 
