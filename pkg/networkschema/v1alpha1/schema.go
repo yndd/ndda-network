@@ -28,6 +28,7 @@ type Schema interface {
 	GetDevices() map[string]Device
 	PrintDevices(n string)
 	ImplementSchema(ctx context.Context, mg resource.Managed) error
+	InitializeDummySchema()
 }
 
 func NewSchema(c resource.ClientApplicator) Schema {
@@ -73,4 +74,19 @@ func (x *schema) ImplementSchema(ctx context.Context, mg resource.Managed) error
 		}
 	}
 	return nil
+}
+
+func (x *schema) InitializeDummySchema()  {
+	d := x.NewDevice(x.client, "dummy")
+	d.InitializeDummySchema()
+}
+
+func (x *schema) ListResources(ctx context.Context, mg resource.Managed) (map[string]interface{}, error) {
+	resources := make(map[string]interface{})
+	for _, d := range x.GetDevices() {
+		if err := d.ListResources(ctx, mg, resources); err != nil {
+			return nil, err
+		}
+	}
+	return resources, nil
 }

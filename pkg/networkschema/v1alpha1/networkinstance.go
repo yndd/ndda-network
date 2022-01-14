@@ -27,6 +27,7 @@ import (
 	"github.com/yndd/nddo-runtime/pkg/odns"
 	"github.com/yndd/nddo-runtime/pkg/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -43,9 +44,14 @@ type NetworkInstance interface {
 
 	Print(niName string, n int)
 	ImplementSchema(ctx context.Context, mg resource.Managed, deviceName string) error
+	InitializeDummySchema()
+	ListResources(ctx context.Context, mg resource.Managed, resources map[string]interface{}) error
 }
 
 func NewNetworkInstance(c resource.ClientApplicator, p Device, key string) NetworkInstance {
+	newNetworkInstanceList := func() networkv1alpha1.IFNetworkNetworkInstanceList {
+		return &networkv1alpha1.NetworkNetworkInstanceList{}
+	}
 	return &networkinstance{
 		client: c,
 		// parent
@@ -55,6 +61,7 @@ func NewNetworkInstance(c resource.ClientApplicator, p Device, key string) Netwo
 		//NetworkInstance: &networkv1alpha1.NetworkInstance{
 		//	Name: &name,
 		//},
+		newNetworkInstanceList: newNetworkInstanceList,
 	}
 }
 
@@ -65,6 +72,8 @@ type networkinstance struct {
 	// children
 	// Data
 	NetworkInstance *networkv1alpha1.NetworkInstance
+
+	newNetworkInstanceList func() networkv1alpha1.IFNetworkNetworkInstanceList
 }
 
 // children
@@ -113,4 +122,24 @@ func (x *networkinstance) buildNddaNetworkInstance(mg resource.Managed, deviceNa
 			NetworkInstance: x.NetworkInstance,
 		},
 	}
+}
+
+func (x *networkinstance) InitializeDummySchema() {
+}
+
+func (x *networkinstance) ListResources(ctx context.Context, mg resource.Managed, resources map[string]interface{}) error {
+	opts := []client.ListOption{
+		client.MatchingLabels{networkv1alpha1.LabelNddaOwner: odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))},
+	}
+	list := x.newNetworkInstanceList()
+	if err := x.client.List(ctx, list, opts...); err != nil {
+		return err
+	}
+
+	for _, i := range list.GetNetworkInstances() {
+		name := i.GetName()
+		kind := strings.ToLower(i.GetObjectKind().GroupVersionKind().Kind)
+		resources[strings.Join([]string{name, kind}, "/")] = "dummy"
+	}
+	return nil
 }

@@ -27,6 +27,7 @@ import (
 	"github.com/yndd/nddo-runtime/pkg/odns"
 	"github.com/yndd/nddo-runtime/pkg/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -45,9 +46,12 @@ type Interface interface {
 
 	Print(itfceName string, n int)
 	ImplementSchema(ctx context.Context, mg resource.Managed, deviceName string) error
+	InitializeDummySchema()
+	ListResources(ctx context.Context, mg resource.Managed, resources map[string]interface{}) error
 }
 
 func NewInterface(c resource.ClientApplicator, p Device, key string) Interface {
+	newInterfaceList := func() networkv1alpha1.IFNetworkInterfaceList { return &networkv1alpha1.NetworkInterfaceList{} }
 	return &itfce{
 		client: c,
 		// parent
@@ -58,6 +62,7 @@ func NewInterface(c resource.ClientApplicator, p Device, key string) Interface {
 		//Interface: &networkv1alpha1.Interface{
 		//	Name: &name,
 		//},
+		newInterfaceList: newInterfaceList,
 	}
 }
 
@@ -69,6 +74,8 @@ type itfce struct {
 	InterfaceSubinterface map[string]InterfaceSubinterface
 	// Data
 	Interface *networkv1alpha1.Interface
+
+	newInterfaceList func() networkv1alpha1.IFNetworkInterfaceList
 }
 
 // children
@@ -136,4 +143,34 @@ func (x *itfce) buildNddaNetworkInterface(mg resource.Managed, deviceName string
 			Interface: x.Interface,
 		},
 	}
+}
+
+func (x *itfce) InitializeDummySchema() {
+	si := x.NewInterfaceSubinterface(x.client, "dummy")
+	si.InitializeDummySchema()
+
+}
+
+
+func (x *itfce) ListResources(ctx context.Context, mg resource.Managed, resources map[string]interface{}) error {
+	opts := []client.ListOption{
+		client.MatchingLabels{networkv1alpha1.LabelNddaOwner: odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))},
+	}
+	list := x.newInterfaceList()
+	if err := x.client.List(ctx, list, opts...); err != nil {
+		return err
+	}
+	
+	for _, i := range list.GetInterfaces() {
+		name := i.GetName()
+		kind := strings.ToLower(i.GetObjectKind().GroupVersionKind().Kind)
+		resources[strings.Join([]string{name, kind}, "/")] = "dummy"
+	}
+	
+	for _, i := range x.GetInterfaceSubinterfaces() {
+		if err := i.ListResources(ctx, mg, resources); err != nil {
+			return err
+		}
+	}
+	return nil
 }

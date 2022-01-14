@@ -27,6 +27,7 @@ import (
 	"github.com/yndd/nddo-runtime/pkg/odns"
 	"github.com/yndd/nddo-runtime/pkg/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -43,9 +44,14 @@ type InterfaceSubinterface interface {
 	AddInterfaceSubinterfaceIpv6(ai *networkv1alpha1.InterfaceSubinterfaceIpv6)
 	Print(itfceName string, n int)
 	ImplementSchema(ctx context.Context, mg resource.Managed, deviceName string) error
+	InitializeDummySchema()
+	ListResources(ctx context.Context, mg resource.Managed, resources map[string]interface{}) error
 }
 
 func NewInterfaceSubinterface(c resource.ClientApplicator, p Interface, key string) InterfaceSubinterface {
+	newInterfaceSubinterfaceList := func() networkv1alpha1.IFNetworkInterfaceSubinterfaceList {
+		return &networkv1alpha1.NetworkInterfaceSubinterfaceList{}
+	}
 	return &interfacesubinterface{
 		client: c,
 		// parent
@@ -55,6 +61,7 @@ func NewInterfaceSubinterface(c resource.ClientApplicator, p Interface, key stri
 		//InterfaceSubinterface: &networkv1alpha1.InterfaceSubinterface{
 		//	Name: &name,
 		//},
+		newInterfaceSubInterfaceList: newInterfaceSubinterfaceList,
 	}
 }
 
@@ -65,6 +72,8 @@ type interfacesubinterface struct {
 	// children
 	// Data
 	InterfaceSubinterface *networkv1alpha1.InterfaceSubinterface
+
+	newInterfaceSubInterfaceList func() networkv1alpha1.IFNetworkInterfaceSubinterfaceList
 }
 
 // children
@@ -127,4 +136,24 @@ func (x *interfacesubinterface) buildNddaNetworkInterfaceSubInterface(mg resourc
 			InterfaceSubinterface: x.InterfaceSubinterface,
 		},
 	}
+}
+
+func (x *interfacesubinterface) InitializeDummySchema() {
+}
+
+func (x *interfacesubinterface) ListResources(ctx context.Context, mg resource.Managed, resources map[string]interface{}) error {
+	opts := []client.ListOption{
+		client.MatchingLabels{networkv1alpha1.LabelNddaOwner: odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))},
+	}
+	list := x.newInterfaceSubInterfaceList()
+	if err := x.client.List(ctx, list, opts...); err != nil {
+		return err
+	}
+
+	for _, i := range list.GetInterfaceSubinterfaces() {
+		name := i.GetName()
+		kind := strings.ToLower(i.GetObjectKind().GroupVersionKind().Kind)
+		resources[strings.Join([]string{name, kind}, "/")] = "dummy"
+	}
+	return nil
 }
