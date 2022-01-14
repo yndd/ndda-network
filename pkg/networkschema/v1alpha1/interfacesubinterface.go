@@ -47,6 +47,7 @@ type InterfaceSubinterface interface {
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{})  error 
+	DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 }
 
 func NewInterfaceSubinterface(c resource.ClientApplicator, p Interface, key string) InterfaceSubinterface {
@@ -167,10 +168,27 @@ func (x *interfacesubinterface) ValidateResources(ctx context.Context, mg resour
 	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
 		[]string{deviceName, itfceName, index})
 
-	if r, ok := resources[networkv1alpha1.InterfaceKindKind]; ok {
+	if r, ok := resources[networkv1alpha1.InterfaceSubinterfaceKindKind]; ok {
 		delete(r, resourceName)
 	}
 	
 
+	return nil
+}
+
+func (x *interfacesubinterface) DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{})  error {
+	if res, ok := resources[networkv1alpha1.InterfaceSubinterfaceKindKind]; ok {
+		for resName := range res{
+			o := &networkv1alpha1.NetworkInterfaceSubinterface{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      resName,
+					Namespace: mg.GetNamespace(),
+				},
+			}
+			if err := x.client.Delete(ctx, o); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }

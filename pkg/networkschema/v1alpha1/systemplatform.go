@@ -23,6 +23,7 @@ import (
 	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 	"github.com/yndd/nddo-runtime/pkg/odns"
 	"github.com/yndd/nddo-runtime/pkg/resource"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -33,6 +34,7 @@ type SystemPlatform interface {
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error
+	DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 }
 
 func NewSystemPlatform(c resource.ClientApplicator, p Device, key string) SystemPlatform {
@@ -92,5 +94,22 @@ func (x *systemplatform) ListResources(ctx context.Context, mg resource.Managed,
 
 func (x *systemplatform) ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error {
 	// TODO
+	return nil
+}
+
+func (x *systemplatform) DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error {
+	if res, ok := resources[networkv1alpha1.SystemPlatformKindKind]; ok {
+		for resName := range res {
+			o := &networkv1alpha1.NetworkSystemPlatform{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      resName,
+					Namespace: mg.GetNamespace(),
+				},
+			}
+			if err := x.client.Delete(ctx, o); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }

@@ -31,6 +31,7 @@ type Schema interface {
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed) (map[string]map[string]interface{}, error)
 	ValidateResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) (map[string]map[string]interface{}, error)
+	DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 }
 
 func NewSchema(c resource.ClientApplicator) Schema {
@@ -100,4 +101,13 @@ func (x *schema) ValidateResources(ctx context.Context, mg resource.Managed, res
 		}
 	}
 	return resources, nil
+}
+
+func (x *schema) DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error {
+	for _, d := range x.GetDevices() {
+		if err := d.DeleteResources(ctx, mg, resources); err != nil {
+			return err
+		}
+	}
+	return nil
 }

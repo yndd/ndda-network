@@ -47,6 +47,7 @@ type NetworkInstance interface {
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{})  error 
+	DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 }
 
 func NewNetworkInstance(c resource.ClientApplicator, p Device, key string) NetworkInstance {
@@ -150,10 +151,27 @@ func (x *networkinstance) ValidateResources(ctx context.Context, mg resource.Man
 	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
 		[]string{deviceName})
 
-	if r, ok := resources[networkv1alpha1.InterfaceKindKind]; ok {
+	if r, ok := resources[networkv1alpha1.NetworkInstanceKindKind]; ok {
 		delete(r, resourceName)
 	}
 	
 
+	return nil
+}
+
+func (x *networkinstance) DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{})  error {
+	if res, ok := resources[networkv1alpha1.NetworkInstanceKindKind]; ok {
+		for resName := range res{
+			o := &networkv1alpha1.NetworkNetworkInstance{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      resName,
+					Namespace: mg.GetNamespace(),
+				},
+			}
+			if err := x.client.Delete(ctx, o); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }

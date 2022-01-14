@@ -49,6 +49,7 @@ type Interface interface {
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error
+	DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 }
 
 func NewInterface(c resource.ClientApplicator, p Device, key string) Interface {
@@ -189,6 +190,29 @@ func (x *itfce) ValidateResources(ctx context.Context, mg resource.Managed, devi
 
 	for _, i := range x.GetInterfaceSubinterfaces() {
 		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (x *itfce) DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{})  error {
+	if res, ok := resources[networkv1alpha1.InterfaceKindKind]; ok {
+		for resName := range res{
+			o := &networkv1alpha1.NetworkInterface{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      resName,
+					Namespace: mg.GetNamespace(),
+				},
+			}
+			if err := x.client.Delete(ctx, o); err != nil {
+				return err
+			}
+		}
+	}
+	
+	for _, i := range x.GetInterfaceSubinterfaces() {
+		if err := i.DeleteResources(ctx, mg, resources); err != nil {
 			return err
 		}
 	}
