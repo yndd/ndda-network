@@ -27,7 +27,7 @@ type Schema interface {
 	NewDevice(c resource.ClientApplicator, name string) Device
 	GetDevices() map[string]Device
 	PrintDevices(n string)
-	ImplementSchema(ctx context.Context, mg resource.Managed, deplPolicy string) error
+	ImplementSchema(ctx context.Context, mg resource.Managed) error
 }
 
 func NewSchema(c resource.ClientApplicator) Schema {
@@ -66,9 +66,9 @@ func (x *schema) PrintDevices(n string) {
 	}
 }
 
-func (x *schema) ImplementSchema(ctx context.Context, mg resource.Managed, deplPolicy string) error {
+func (x *schema) ImplementSchema(ctx context.Context, mg resource.Managed) error {
 	for deviceName, d := range x.GetDevices() {
-		if err := d.ImplementSchema(ctx, mg, deviceName, deplPolicy); err != nil {
+		if err := d.ImplementSchema(ctx, mg, deviceName); err != nil {
 			return err
 		}
 	}

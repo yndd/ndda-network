@@ -42,7 +42,7 @@ type NetworkInstance interface {
 	AddNetworkInstanceInterface(ai *networkv1alpha1.NetworkInstanceConfigInterface)
 
 	Print(niName string, n int)
-	ImplementSchema(ctx context.Context, mg resource.Managed, deviceName, deplPolicy string) error
+	ImplementSchema(ctx context.Context, mg resource.Managed, deviceName string) error
 }
 
 func NewNetworkInstance(c resource.ClientApplicator, p Device, key string) NetworkInstance {
@@ -86,15 +86,15 @@ func (x *networkinstance) Print(niName string, n int) {
 	}
 }
 
-func (x *networkinstance) ImplementSchema(ctx context.Context, mg resource.Managed, deviceName, deplPolicy string) error {
-	o := x.buildNddaNetworkInstance(mg, deviceName, deplPolicy)
+func (x *networkinstance) ImplementSchema(ctx context.Context, mg resource.Managed, deviceName string) error {
+	o := x.buildNddaNetworkInstance(mg, deviceName)
 	if err := x.client.Apply(ctx, o); err != nil {
 		return errors.Wrap(err, errCreateNetworkInstance)
 	}
 	return nil
 }
 
-func (x *networkinstance) buildNddaNetworkInstance(mg resource.Managed, deviceName, deplPolicy string) *networkv1alpha1.NetworkNetworkInstance {
+func (x *networkinstance) buildNddaNetworkInstance(mg resource.Managed, deviceName string) *networkv1alpha1.NetworkNetworkInstance {
 	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
 		[]string{deviceName})
 
@@ -103,7 +103,7 @@ func (x *networkinstance) buildNddaNetworkInstance(mg resource.Managed, deviceNa
 			Name:      resourceName,
 			Namespace: mg.GetNamespace(),
 			Labels: map[string]string{
-				networkv1alpha1.LabelNddaDeploymentPolicy: deplPolicy,
+				networkv1alpha1.LabelNddaDeploymentPolicy: string(mg.GetDeploymentPolicy()),
 				networkv1alpha1.LabelNddaOwner:            odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind)),
 				networkv1alpha1.LabelNddaDevice:           deviceName,
 			},

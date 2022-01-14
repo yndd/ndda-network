@@ -34,7 +34,7 @@ type Device interface {
 	GetSystemPlatforms() map[string]SystemPlatform
 	// methods data
 	Print(nodeName string, n int)
-	ImplementSchema(ctx context.Context, mg resource.Managed, deviceName, deplPolicy string) error
+	ImplementSchema(ctx context.Context, mg resource.Managed, deviceName string) error
 }
 
 func NewDevice(c resource.ClientApplicator, p Schema, key string) Device {
@@ -104,14 +104,14 @@ func (x *device) Print(nodeName string, n int) {
 	}
 }
 
-func (x *device) ImplementSchema(ctx context.Context, mg resource.Managed, deviceName, deplPolicy string) error {
+func (x *device) ImplementSchema(ctx context.Context, mg resource.Managed, deviceName string) error {
 	for _, i := range x.GetInterfaces() {
-		if err := i.ImplementSchema(ctx, mg, deviceName, deplPolicy); err != nil {
+		if err := i.ImplementSchema(ctx, mg, deviceName); err != nil {
 			return err
 		}
 	}
 	for _, ni := range x.GetNetworkInstances() {
-		if err := ni.ImplementSchema(ctx, mg, deviceName, deplPolicy); err != nil {
+		if err := ni.ImplementSchema(ctx, mg, deviceName); err != nil {
 			return err
 		}
 	}

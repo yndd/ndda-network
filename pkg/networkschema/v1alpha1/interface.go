@@ -44,7 +44,7 @@ type Interface interface {
 	Get() *networkv1alpha1.Interface
 
 	Print(itfceName string, n int)
-	ImplementSchema(ctx context.Context, mg resource.Managed, deviceName, deplPolicy string) error
+	ImplementSchema(ctx context.Context, mg resource.Managed, deviceName string) error
 }
 
 func NewInterface(c resource.ClientApplicator, p Device, key string) Interface {
@@ -99,14 +99,14 @@ func (x *itfce) Print(itfceName string, n int) {
 	}
 }
 
-func (x *itfce) ImplementSchema(ctx context.Context, mg resource.Managed, deviceName, deplPolicy string) error {
-	o := x.buildNddaNetworkInterface(mg, deviceName, deplPolicy)
+func (x *itfce) ImplementSchema(ctx context.Context, mg resource.Managed, deviceName string) error {
+	o := x.buildNddaNetworkInterface(mg, deviceName)
 	if err := x.client.Apply(ctx, o); err != nil {
 		return errors.Wrap(err, errCreateInterface)
 	}
 
 	for _, r := range x.GetInterfaceSubinterfaces() {
-		if err := r.ImplementSchema(ctx, mg, deviceName, deplPolicy); err != nil {
+		if err := r.ImplementSchema(ctx, mg, deviceName); err != nil {
 			return err
 		}
 	}
@@ -114,7 +114,7 @@ func (x *itfce) ImplementSchema(ctx context.Context, mg resource.Managed, device
 	return nil
 }
 
-func (x *itfce) buildNddaNetworkInterface(mg resource.Managed, deviceName, deplPolicy string) *networkv1alpha1.NetworkInterface {
+func (x *itfce) buildNddaNetworkInterface(mg resource.Managed, deviceName string) *networkv1alpha1.NetworkInterface {
 	itfceName := strings.ReplaceAll(*x.Interface.Name, "/", "-")
 
 	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
@@ -125,7 +125,7 @@ func (x *itfce) buildNddaNetworkInterface(mg resource.Managed, deviceName, deplP
 			Name:      resourceName,
 			Namespace: mg.GetNamespace(),
 			Labels: map[string]string{
-				networkv1alpha1.LabelNddaDeploymentPolicy: deplPolicy,
+				networkv1alpha1.LabelNddaDeploymentPolicy: string(mg.GetDeploymentPolicy()),
 				networkv1alpha1.LabelNddaOwner:            odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind)),
 				networkv1alpha1.LabelNddaDevice:           deviceName,
 				networkv1alpha1.LabelNddaItfce:            itfceName,
