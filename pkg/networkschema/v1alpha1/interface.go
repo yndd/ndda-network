@@ -47,7 +47,8 @@ type Interface interface {
 	Print(itfceName string, n int)
 	ImplementSchema(ctx context.Context, mg resource.Managed, deviceName string) error
 	InitializeDummySchema()
-	ListResources(ctx context.Context, mg resource.Managed, resources map[string]interface{}) error
+	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
+	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error
 }
 
 func NewInterface(c resource.ClientApplicator, p Device, key string) Interface {
@@ -151,8 +152,7 @@ func (x *itfce) InitializeDummySchema() {
 
 }
 
-
-func (x *itfce) ListResources(ctx context.Context, mg resource.Managed, resources map[string]interface{}) error {
+func (x *itfce) ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error {
 	opts := []client.ListOption{
 		client.MatchingLabels{networkv1alpha1.LabelNddaOwner: odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))},
 	}
@@ -160,15 +160,35 @@ func (x *itfce) ListResources(ctx context.Context, mg resource.Managed, resource
 	if err := x.client.List(ctx, list, opts...); err != nil {
 		return err
 	}
-	
+
 	for _, i := range list.GetInterfaces() {
-		name := i.GetName()
-		kind := strings.ToLower(i.GetObjectKind().GroupVersionKind().Kind)
-		resources[strings.Join([]string{name, kind}, "/")] = "dummy"
+		if _, ok := resources[i.GetObjectKind().GroupVersionKind().Kind]; !ok {
+			resources[i.GetObjectKind().GroupVersionKind().Kind] = make(map[string]interface{})
+		}
+		resources[i.GetObjectKind().GroupVersionKind().Kind][i.GetName()] = "dummy"
+
 	}
-	
+
 	for _, i := range x.GetInterfaceSubinterfaces() {
 		if err := i.ListResources(ctx, mg, resources); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (x *itfce) ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error {
+	itfceName := strings.ReplaceAll(*x.Interface.Name, "/", "-")
+
+	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
+		[]string{deviceName, itfceName})
+
+	if r, ok := resources[networkv1alpha1.InterfaceKindKind]; ok {
+		delete(r, resourceName)
+	}
+
+	for _, i := range x.GetInterfaceSubinterfaces() {
+		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
 			return err
 		}
 	}

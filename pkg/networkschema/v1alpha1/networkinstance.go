@@ -45,7 +45,8 @@ type NetworkInstance interface {
 	Print(niName string, n int)
 	ImplementSchema(ctx context.Context, mg resource.Managed, deviceName string) error
 	InitializeDummySchema()
-	ListResources(ctx context.Context, mg resource.Managed, resources map[string]interface{}) error
+	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
+	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{})  error 
 }
 
 func NewNetworkInstance(c resource.ClientApplicator, p Device, key string) NetworkInstance {
@@ -127,7 +128,7 @@ func (x *networkinstance) buildNddaNetworkInstance(mg resource.Managed, deviceNa
 func (x *networkinstance) InitializeDummySchema() {
 }
 
-func (x *networkinstance) ListResources(ctx context.Context, mg resource.Managed, resources map[string]interface{}) error {
+func (x *networkinstance) ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error {
 	opts := []client.ListOption{
 		client.MatchingLabels{networkv1alpha1.LabelNddaOwner: odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))},
 	}
@@ -137,9 +138,22 @@ func (x *networkinstance) ListResources(ctx context.Context, mg resource.Managed
 	}
 
 	for _, i := range list.GetNetworkInstances() {
-		name := i.GetName()
-		kind := strings.ToLower(i.GetObjectKind().GroupVersionKind().Kind)
-		resources[strings.Join([]string{name, kind}, "/")] = "dummy"
+		if _, ok := resources[i.GetObjectKind().GroupVersionKind().Kind]; !ok {
+			resources[i.GetObjectKind().GroupVersionKind().Kind] = make(map[string]interface{})
+		}
+		resources[i.GetObjectKind().GroupVersionKind().Kind][i.GetName()] = "dummy"
 	}
+	return nil
+}
+
+func (x *networkinstance) ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{})  error {
+	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
+		[]string{deviceName})
+
+	if r, ok := resources[networkv1alpha1.InterfaceKindKind]; ok {
+		delete(r, resourceName)
+	}
+	
+
 	return nil
 }

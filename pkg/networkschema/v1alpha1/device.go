@@ -36,7 +36,8 @@ type Device interface {
 	Print(nodeName string, n int)
 	ImplementSchema(ctx context.Context, mg resource.Managed, deviceName string) error
 	InitializeDummySchema()
-	ListResources(ctx context.Context, mg resource.Managed, resources map[string]interface{}) error
+	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
+	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{})  error 
 }
 
 func NewDevice(c resource.ClientApplicator, p Schema, key string) Device {
@@ -131,7 +132,7 @@ func (x *device) InitializeDummySchema()  {
 	
 }
 
-func (x *device) ListResources(ctx context.Context, mg resource.Managed, resources map[string]interface{}) error {
+func (x *device) ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error {
 	for _, i := range x.GetInterfaces() {
 		if err := i.ListResources(ctx, mg, resources); err != nil {
 			return err
@@ -144,6 +145,25 @@ func (x *device) ListResources(ctx context.Context, mg resource.Managed, resourc
 	}
 	for _, i := range x.GetSystemPlatforms() {
 		if err := i.ListResources(ctx, mg, resources); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (x *device) ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{})  error {
+	for _, i := range x.GetInterfaces() {
+		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
+			return err
+		}
+	}
+	for _, i := range x.GetNetworkInstances() {
+		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
+			return err
+		}
+	}
+	for _, i := range x.GetSystemPlatforms() {
+		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
 			return err
 		}
 	}
