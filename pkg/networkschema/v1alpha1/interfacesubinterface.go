@@ -187,10 +187,10 @@ func (x *interfacesubinterface) ListResources(ctx context.Context, mg resource.M
 func (x *interfacesubinterface) ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error {
 	if x.Get() != nil {
 		index := strings.ReplaceAll(*x.InterfaceSubinterface.Index, "/", "-")
-		itfceName := strings.ReplaceAll(*x.parent.Get().Name, "/", "-")
+		itfceName := strings.ReplaceAll(x.parent.GetKey(), "/", "-")
 
 		resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
-			[]string{deviceName, itfceName, index})
+			[]string{itfceName, index, deviceName})
 
 		if r, ok := resources[networkv1alpha1.InterfaceSubinterfaceKindKind]; ok {
 			delete(r, resourceName)

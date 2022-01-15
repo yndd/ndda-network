@@ -169,7 +169,7 @@ func (x *networkinstance) ListResources(ctx context.Context, mg resource.Managed
 func (x *networkinstance) ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error {
 	if x.Get() != nil {
 		resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
-			[]string{deviceName})
+			[]string{strings.ToLower(*x.NetworkInstance.Name), deviceName})
 
 		if r, ok := resources[networkv1alpha1.NetworkInstanceKindKind]; ok {
 			delete(r, resourceName)

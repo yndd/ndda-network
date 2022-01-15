@@ -194,10 +194,10 @@ func (x *itfce) ListResources(ctx context.Context, mg resource.Managed, resource
 
 func (x *itfce) ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error {
 	if x.Get() != nil {
-		itfceName := strings.ReplaceAll(*x.Get().Name, "/", "-")
+		itfceName := strings.ReplaceAll(*x.Interface.Name, "/", "-")
 
 		resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
-			[]string{deviceName, itfceName})
+			[]string{itfceName, deviceName})
 
 		if r, ok := resources[networkv1alpha1.InterfaceKindKind]; ok {
 			delete(r, resourceName)
