@@ -202,11 +202,10 @@ func (x *itfce) ValidateResources(ctx context.Context, mg resource.Managed, devi
 		if r, ok := resources[networkv1alpha1.InterfaceKindKind]; ok {
 			delete(r, resourceName)
 		}
-
-		for _, i := range x.GetInterfaceSubinterfaces() {
-			if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
-				return err
-			}
+	}
+	for _, i := range x.GetInterfaceSubinterfaces() {
+		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
+			return err
 		}
 	}
 
