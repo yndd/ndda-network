@@ -31,6 +31,7 @@ type SystemPlatform interface {
 	// methods children
 	// methods data
 	Update(x *networkv1alpha1.SystemPlatform)
+	Get() *networkv1alpha1.SystemPlatform
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error
@@ -69,6 +70,10 @@ type systemplatform struct {
 // Data
 func (x *systemplatform) Update(d *networkv1alpha1.SystemPlatform) {
 	x.SystemPlatform = d
+}
+
+func (x *systemplatform) Get() *networkv1alpha1.SystemPlatform {
+	return x.SystemPlatform 
 }
 
 func (x *systemplatform) InitializeDummySchema() {

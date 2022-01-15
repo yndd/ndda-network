@@ -40,6 +40,7 @@ type NetworkInstance interface {
 	// methods children
 	// methods data
 	Update(x *networkv1alpha1.NetworkInstance)
+	Get() *networkv1alpha1.NetworkInstance
 	AddNetworkInstanceInterface(ai *networkv1alpha1.NetworkInstanceConfigInterface)
 
 	Print(niName string, n int)
@@ -84,6 +85,10 @@ func (x *networkinstance) Update(d *networkv1alpha1.NetworkInstance) {
 	x.NetworkInstance = d
 }
 
+func (x *networkinstance) Get() *networkv1alpha1.NetworkInstance {
+	return x.NetworkInstance
+}
+
 // NetworkInstance interface network-instance-config NetworkInstance [network-instance config]
 func (x *networkinstance) AddNetworkInstanceInterface(ai *networkv1alpha1.NetworkInstanceConfigInterface) {
 	x.NetworkInstance.Config.Interface = append(x.NetworkInstance.Config.Interface, ai)
@@ -98,9 +103,11 @@ func (x *networkinstance) Print(niName string, n int) {
 }
 
 func (x *networkinstance) DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error {
-	o := x.buildNddaNetworkInstance(mg, deviceName, labels)
-	if err := x.client.Apply(ctx, o); err != nil {
-		return errors.Wrap(err, errCreateNetworkInstance)
+	if x.Get() != nil {
+		o := x.buildNddaNetworkInstance(mg, deviceName, labels)
+		if err := x.client.Apply(ctx, o); err != nil {
+			return errors.Wrap(err, errCreateNetworkInstance)
+		}
 	}
 	return nil
 }
@@ -112,7 +119,7 @@ func (x *networkinstance) buildNddaNetworkInstance(mg resource.Managed, deviceNa
 	labels[networkv1alpha1.LabelNddaDeploymentPolicy] = string(mg.GetDeploymentPolicy())
 	labels[networkv1alpha1.LabelNddaOwner] = odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))
 	labels[networkv1alpha1.LabelNddaDevice] = deviceName
-	
+
 	return &networkv1alpha1.NetworkNetworkInstance{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:            resourceName,
@@ -148,13 +155,14 @@ func (x *networkinstance) ListResources(ctx context.Context, mg resource.Managed
 }
 
 func (x *networkinstance) ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error {
-	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
-		[]string{deviceName})
+	if x.Get() != nil {
+		resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
+			[]string{deviceName})
 
-	if r, ok := resources[networkv1alpha1.NetworkInstanceKindKind]; ok {
-		delete(r, resourceName)
+		if r, ok := resources[networkv1alpha1.NetworkInstanceKindKind]; ok {
+			delete(r, resourceName)
+		}
 	}
-
 	return nil
 }
 

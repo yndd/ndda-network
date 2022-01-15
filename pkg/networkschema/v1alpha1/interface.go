@@ -109,14 +109,16 @@ func (x *itfce) Print(itfceName string, n int) {
 }
 
 func (x *itfce) DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error {
-	o := x.buildNddaNetworkInterface(mg, deviceName, labels)
-	if err := x.client.Apply(ctx, o); err != nil {
-		return errors.Wrap(err, errCreateInterface)
-	}
+	if x.Get() != nil {
+		o := x.buildNddaNetworkInterface(mg, deviceName, labels)
+		if err := x.client.Apply(ctx, o); err != nil {
+			return errors.Wrap(err, errCreateInterface)
+		}
 
-	for _, r := range x.GetInterfaceSubinterfaces() {
-		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
-			return err
+		for _, r := range x.GetInterfaceSubinterfaces() {
+			if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
+				return err
+			}
 		}
 	}
 

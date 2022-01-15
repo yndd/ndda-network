@@ -40,6 +40,8 @@ type InterfaceSubinterface interface {
 	// methods children
 	// methods data
 	Update(x *networkv1alpha1.InterfaceSubinterface)
+	Get() *networkv1alpha1.InterfaceSubinterface
+
 	AddInterfaceSubinterfaceIpv4(ai *networkv1alpha1.InterfaceSubinterfaceIpv4)
 	AddInterfaceSubinterfaceIpv6(ai *networkv1alpha1.InterfaceSubinterfaceIpv6)
 	Print(itfceName string, n int)
@@ -84,6 +86,10 @@ func (x *interfacesubinterface) Update(d *networkv1alpha1.InterfaceSubinterface)
 	x.InterfaceSubinterface = d
 }
 
+func (x *interfacesubinterface) Get() *networkv1alpha1.InterfaceSubinterface {
+	return x.InterfaceSubinterface
+}
+
 // InterfaceSubinterface ipv4 subinterface Subinterface [subinterface]
 func (x *interfacesubinterface) AddInterfaceSubinterfaceIpv4(ai *networkv1alpha1.InterfaceSubinterfaceIpv4) {
 	x.InterfaceSubinterface.Ipv4 = append(x.InterfaceSubinterface.Ipv4, ai)
@@ -107,11 +113,14 @@ func (x *interfacesubinterface) Print(siName string, n int) {
 }
 
 func (x *interfacesubinterface) DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error {
-	o := x.buildNddaNetworkInterfaceSubInterface(mg, deviceName, labels)
-	if err := x.client.Apply(ctx, o); err != nil {
-		return errors.Wrap(err, errCreateInterfaceSubInterface)
+	if x.Get() != nil {
+		o := x.buildNddaNetworkInterfaceSubInterface(mg, deviceName, labels)
+		if err := x.client.Apply(ctx, o); err != nil {
+			return errors.Wrap(err, errCreateInterfaceSubInterface)
+		}
 	}
 	return nil
+
 }
 
 func (x *interfacesubinterface) buildNddaNetworkInterfaceSubInterface(mg resource.Managed, deviceName string, labels map[string]string) *networkv1alpha1.NetworkInterfaceSubinterface {
@@ -161,17 +170,19 @@ func (x *interfacesubinterface) ListResources(ctx context.Context, mg resource.M
 }
 
 func (x *interfacesubinterface) ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error {
-	index := strings.ReplaceAll(*x.InterfaceSubinterface.Index, "/", "-")
-	itfceName := strings.ReplaceAll(*x.parent.Get().Name, "/", "-")
+	if x.Get() != nil {
+		index := strings.ReplaceAll(*x.InterfaceSubinterface.Index, "/", "-")
+		itfceName := strings.ReplaceAll(*x.parent.Get().Name, "/", "-")
 
-	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
-		[]string{deviceName, itfceName, index})
+		resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
+			[]string{deviceName, itfceName, index})
 
-	if r, ok := resources[networkv1alpha1.InterfaceSubinterfaceKindKind]; ok {
-		delete(r, resourceName)
+		if r, ok := resources[networkv1alpha1.InterfaceSubinterfaceKindKind]; ok {
+			delete(r, resourceName)
+		}
 	}
-
 	return nil
+
 }
 
 func (x *interfacesubinterface) DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error {
