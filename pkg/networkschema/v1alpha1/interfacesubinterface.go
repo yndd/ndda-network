@@ -41,6 +41,7 @@ type InterfaceSubinterface interface {
 	// methods data
 	Update(x *networkv1alpha1.InterfaceSubinterface)
 	Get() *networkv1alpha1.InterfaceSubinterface
+	GetKey() string
 
 	AddInterfaceSubinterfaceIpv4(ai *networkv1alpha1.InterfaceSubinterfaceIpv4)
 	AddInterfaceSubinterfaceIpv6(ai *networkv1alpha1.InterfaceSubinterfaceIpv6)
@@ -58,6 +59,8 @@ func NewInterfaceSubinterface(c resource.ClientApplicator, p Interface, key stri
 	}
 	return &interfacesubinterface{
 		client: c,
+		// key
+		key: key,
 		// parent
 		parent: p,
 		// children
@@ -71,6 +74,8 @@ func NewInterfaceSubinterface(c resource.ClientApplicator, p Interface, key stri
 
 type interfacesubinterface struct {
 	client resource.ClientApplicator
+	// key
+	key string
 	// parent
 	parent Interface
 	// children
@@ -88,6 +93,10 @@ func (x *interfacesubinterface) Update(d *networkv1alpha1.InterfaceSubinterface)
 
 func (x *interfacesubinterface) Get() *networkv1alpha1.InterfaceSubinterface {
 	return x.InterfaceSubinterface
+}
+
+func (x *interfacesubinterface) GetKey() string {
+	return x.key
 }
 
 // InterfaceSubinterface ipv4 subinterface Subinterface [subinterface]
@@ -130,7 +139,7 @@ func (x *interfacesubinterface) DeploySchema(ctx context.Context, mg resource.Ma
 
 func (x *interfacesubinterface) buildNddaNetworkInterfaceSubInterface(mg resource.Managed, deviceName string, labels map[string]string) *networkv1alpha1.NetworkInterfaceSubinterface {
 	index := strings.ReplaceAll(*x.InterfaceSubinterface.Index, "/", "-")
-	itfceName := strings.ReplaceAll(*x.parent.Get().Name, "/", "-")
+	itfceName := strings.ReplaceAll(x.parent.GetKey(), "/", "-")
 
 	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
 		[]string{itfceName, index, deviceName})

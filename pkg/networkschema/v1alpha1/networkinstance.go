@@ -57,6 +57,8 @@ func NewNetworkInstance(c resource.ClientApplicator, p Device, key string) Netwo
 	}
 	return &networkinstance{
 		client: c,
+		// key
+		key: key,
 		// parent
 		parent: p,
 		// children
@@ -70,6 +72,8 @@ func NewNetworkInstance(c resource.ClientApplicator, p Device, key string) Netwo
 
 type networkinstance struct {
 	client resource.ClientApplicator
+	// key
+	key string
 	// parent
 	parent Device
 	// children
@@ -87,6 +91,10 @@ func (x *networkinstance) Update(d *networkv1alpha1.NetworkInstance) {
 
 func (x *networkinstance) Get() *networkv1alpha1.NetworkInstance {
 	return x.NetworkInstance
+}
+
+func (x *networkinstance) GetKey() string {
+	return x.key
 }
 
 // NetworkInstance interface network-instance-config NetworkInstance [network-instance config]

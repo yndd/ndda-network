@@ -43,6 +43,7 @@ type Interface interface {
 	// methods data
 	Update(x *networkv1alpha1.Interface)
 	Get() *networkv1alpha1.Interface
+	GetKey() string
 
 	Print(itfceName string, n int)
 	DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error
@@ -56,6 +57,8 @@ func NewInterface(c resource.ClientApplicator, p Device, key string) Interface {
 	newInterfaceList := func() networkv1alpha1.IFNetworkInterfaceList { return &networkv1alpha1.NetworkInterfaceList{} }
 	return &itfce{
 		client: c,
+		// key
+		key: key,
 		// parent
 		parent: p,
 		// children
@@ -70,6 +73,8 @@ func NewInterface(c resource.ClientApplicator, p Device, key string) Interface {
 
 type itfce struct {
 	client resource.ClientApplicator
+	// key
+	key string
 	// parent
 	parent Device
 	// children
@@ -98,6 +103,10 @@ func (x *itfce) Update(d *networkv1alpha1.Interface) {
 
 func (x *itfce) Get() *networkv1alpha1.Interface {
 	return x.Interface
+}
+
+func (x *itfce) GetKey() string {
+	return x.key
 }
 
 func (x *itfce) Print(itfceName string, n int) {
