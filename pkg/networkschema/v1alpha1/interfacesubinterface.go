@@ -23,6 +23,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/yndd/ndd-runtime/pkg/meta"
+	"github.com/yndd/ndd-runtime/pkg/utils"
 	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 	"github.com/yndd/nddo-runtime/pkg/odns"
 	"github.com/yndd/nddo-runtime/pkg/resource"
@@ -156,7 +157,7 @@ func (x *interfacesubinterface) buildNddaNetworkInterfaceSubInterface(mg resourc
 			OwnerReferences: []metav1.OwnerReference{meta.AsController(meta.TypedReferenceTo(mg, mg.GetObjectKind().GroupVersionKind()))},
 		},
 		Spec: networkv1alpha1.InterfaceSubinterfaceSpec{
-			InterfaceName:         x.parent.Get().Name,
+			InterfaceName:         utils.StringPtr(x.parent.GetKey()),
 			InterfaceSubinterface: x.InterfaceSubinterface,
 		},
 	}
