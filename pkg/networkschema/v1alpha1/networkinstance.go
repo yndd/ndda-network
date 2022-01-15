@@ -126,7 +126,7 @@ func (x *networkinstance) DeploySchema(ctx context.Context, mg resource.Managed,
 
 func (x *networkinstance) buildNddaNetworkInstance(mg resource.Managed, deviceName string, labels map[string]string) *networkv1alpha1.NetworkNetworkInstance {
 	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
-		[]string{*x.NetworkInstance.Name, deviceName})
+		[]string{strings.ToLower(*x.NetworkInstance.Name), deviceName})
 
 	labels[networkv1alpha1.LabelNddaDeploymentPolicy] = string(mg.GetDeploymentPolicy())
 	labels[networkv1alpha1.LabelNddaOwner] = odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))
