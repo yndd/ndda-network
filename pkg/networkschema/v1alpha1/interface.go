@@ -106,7 +106,7 @@ func (x *itfce) Print(itfceName string, n int) {
 	} else {
 		fmt.Printf("%s Interface: %s\n", strings.Repeat(" ", n), itfceName)
 	}
-	
+
 	n++
 	for subItfceName, i := range x.InterfaceSubinterface {
 		i.Print(subItfceName, n)
@@ -119,11 +119,10 @@ func (x *itfce) DeploySchema(ctx context.Context, mg resource.Managed, deviceNam
 		if err := x.client.Apply(ctx, o); err != nil {
 			return errors.Wrap(err, errCreateInterface)
 		}
-
-		for _, r := range x.GetInterfaceSubinterfaces() {
-			if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
-				return err
-			}
+	}
+	for _, r := range x.GetInterfaceSubinterfaces() {
+		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
+			return err
 		}
 	}
 
@@ -134,7 +133,7 @@ func (x *itfce) buildNddaNetworkInterface(mg resource.Managed, deviceName string
 	itfceName := strings.ReplaceAll(*x.Interface.Name, "/", "-")
 
 	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
-		[]string{deviceName, itfceName})
+		[]string{itfceName, deviceName})
 
 	labels[networkv1alpha1.LabelNddaDeploymentPolicy] = string(mg.GetDeploymentPolicy())
 	labels[networkv1alpha1.LabelNddaOwner] = odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))

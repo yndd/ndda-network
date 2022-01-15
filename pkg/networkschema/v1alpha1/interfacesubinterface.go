@@ -133,7 +133,7 @@ func (x *interfacesubinterface) buildNddaNetworkInterfaceSubInterface(mg resourc
 	itfceName := strings.ReplaceAll(*x.parent.Get().Name, "/", "-")
 
 	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
-		[]string{deviceName, itfceName, index})
+		[]string{itfceName, index, deviceName})
 
 	labels[networkv1alpha1.LabelNddaDeploymentPolicy] = string(mg.GetDeploymentPolicy())
 	labels[networkv1alpha1.LabelNddaOwner] = odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))
