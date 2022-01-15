@@ -101,15 +101,20 @@ func (x *interfacesubinterface) AddInterfaceSubinterfaceIpv6(ai *networkv1alpha1
 }
 
 func (x *interfacesubinterface) Print(siName string, n int) {
-	fmt.Printf("%s SubInterface: %s Kind: %s OuterTag: %d\n", strings.Repeat(" ", n), siName, x.InterfaceSubinterface.Config.Kind, *x.InterfaceSubinterface.DeepCopy().Config.OuterVlanId)
-	n++
-	fmt.Printf("%s Local Addressing Info\n", strings.Repeat(" ", n))
-	for _, prefix := range x.InterfaceSubinterface.Ipv4 {
-		fmt.Printf("%s IpPrefix: %s\n", strings.Repeat(" ", n), *prefix.IpPrefix)
+	if x.Get() != nil {
+		fmt.Printf("%s SubInterface: %s Kind: %s OuterTag: %d\n", strings.Repeat(" ", n), siName, x.InterfaceSubinterface.Config.Kind, *x.InterfaceSubinterface.DeepCopy().Config.OuterVlanId)
+		n++
+		fmt.Printf("%s Local Addressing Info\n", strings.Repeat(" ", n))
+		for _, prefix := range x.InterfaceSubinterface.Ipv4 {
+			fmt.Printf("%s IpPrefix: %s\n", strings.Repeat(" ", n), *prefix.IpPrefix)
+		}
+		for _, prefix := range x.InterfaceSubinterface.Ipv6 {
+			fmt.Printf("%s IpPrefix: %s\n", strings.Repeat(" ", n), *prefix.IpPrefix)
+		}
+	} else {
+		fmt.Printf("%s SubInterface: %s\n", strings.Repeat(" ", n), siName)
 	}
-	for _, prefix := range x.InterfaceSubinterface.Ipv6 {
-		fmt.Printf("%s IpPrefix: %s\n", strings.Repeat(" ", n), *prefix.IpPrefix)
-	}
+
 }
 
 func (x *interfacesubinterface) DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error {

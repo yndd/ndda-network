@@ -95,10 +95,14 @@ func (x *networkinstance) AddNetworkInstanceInterface(ai *networkv1alpha1.Networ
 }
 
 func (x *networkinstance) Print(niName string, n int) {
-	fmt.Printf("%s Ni Name: %s Kind: %s\n", strings.Repeat(" ", n), niName, *x.NetworkInstance.Name)
-	n++
-	for _, itfce := range x.NetworkInstance.Config.Interface {
-		fmt.Printf("%s %s\n", strings.Repeat(" ", n), *itfce.Name)
+	if x.Get() != nil {
+		fmt.Printf("%s Ni Name: %s Kind: %s\n", strings.Repeat(" ", n), niName, *x.NetworkInstance.Name)
+		n++
+		for _, itfce := range x.NetworkInstance.Config.Interface {
+			fmt.Printf("%s %s\n", strings.Repeat(" ", n), *itfce.Name)
+		}
+	} else {
+		fmt.Printf("%s Ni Name: %s\n", strings.Repeat(" ", n), niName)
 	}
 }
 

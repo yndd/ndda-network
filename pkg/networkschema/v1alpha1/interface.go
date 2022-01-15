@@ -101,7 +101,12 @@ func (x *itfce) Get() *networkv1alpha1.Interface {
 }
 
 func (x *itfce) Print(itfceName string, n int) {
-	fmt.Printf("%s Interface: %s Kind: %s LAG: %t, LAG Member: %t\n", strings.Repeat(" ", n), itfceName, x.Interface.Config.Kind, *x.Interface.Config.Lag, *x.Interface.Config.LagMember)
+	if x.Get() != nil {
+		fmt.Printf("%s Interface: %s Kind: %s LAG: %t, LAG Member: %t\n", strings.Repeat(" ", n), itfceName, x.Interface.Config.Kind, *x.Interface.Config.Lag, *x.Interface.Config.LagMember)
+	} else {
+		fmt.Printf("%s Interface: %s\n", strings.Repeat(" ", n), itfceName)
+	}
+	
 	n++
 	for subItfceName, i := range x.InterfaceSubinterface {
 		i.Print(subItfceName, n)
