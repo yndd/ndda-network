@@ -14,11 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package nddaschema
+package networkschema
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -33,11 +32,8 @@ type Device interface {
 	GetInterfaces() map[string]Interface
 	GetNetworkInstances() map[string]NetworkInstance
 	GetSystemPlatforms() map[string]SystemPlatform
-	// methods data
-	GetKey() []string
-	Get() interface{}
-	// methods schema
-	Print(key string, n int)
+	// methods schema/data
+	Print(nodeName string, n int)
 	DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
@@ -47,10 +43,7 @@ type Device interface {
 
 func NewDevice(c resource.ClientApplicator, p Schema, key string) Device {
 	return &device{
-		// k8s client
 		client: c,
-		// key
-		key: key,
 		// parent
 		parent: p,
 		// children
@@ -58,17 +51,14 @@ func NewDevice(c resource.ClientApplicator, p Schema, key string) Device {
 		NetworkInstance: make(map[string]NetworkInstance),
 		SystemPlatform:  make(map[string]SystemPlatform),
 		// data key
-		//Device: &nddav1alpha1.Device{
+		//Device: &networkv1alpha1.Device{
 		//	Name: &name,
 		//},
 	}
 }
 
 type device struct {
-	// k8s client
 	client resource.ClientApplicator
-	// key
-	key string
 	// parent
 	parent Schema
 	// children
@@ -78,45 +68,22 @@ type device struct {
 	// Data
 }
 
-// key type/method
-
-type DeviceKey struct {
-	Name string
-}
-
-func WithDeviceKey(key *DeviceKey) string {
-	d, err := json.Marshal(key)
-	if err != nil {
-		return ""
-	}
-	var x1 interface{}
-	json.Unmarshal(d, &x1)
-
-	switch k := x1.(type) {
-	case map[string]string:
-		ssl := toStrings(k)
-		return toString(ssl)
-	default:
-		return ""
-	}
-}
-
-// methods children
+// children
 func (x *device) NewInterface(c resource.ClientApplicator, key string) Interface {
 	if _, ok := x.Interface[key]; !ok {
-		x.Interface[key] = NewInterface(c, x, key)
+		x.Interface[key] = NewInterface(x.client, x, key)
 	}
 	return x.Interface[key]
 }
 func (x *device) NewNetworkInstance(c resource.ClientApplicator, key string) NetworkInstance {
 	if _, ok := x.NetworkInstance[key]; !ok {
-		x.NetworkInstance[key] = NewNetworkInstance(c, x, key)
+		x.NetworkInstance[key] = NewNetworkInstance(x.client, x, key)
 	}
 	return x.NetworkInstance[key]
 }
 func (x *device) NewSystemPlatform(c resource.ClientApplicator, key string) SystemPlatform {
 	if _, ok := x.SystemPlatform[key]; !ok {
-		x.SystemPlatform[key] = NewSystemPlatform(c, x, key)
+		x.SystemPlatform[key] = NewSystemPlatform(x.client, x, key)
 	}
 	return x.SystemPlatform[key]
 }
@@ -130,52 +97,25 @@ func (x *device) GetSystemPlatforms() map[string]SystemPlatform {
 	return x.SystemPlatform
 }
 
-// methods data
-func (x *device) Get() interface{} {
-	return nil
-}
-
-func (x *device) GetKey() []string {
-	return strings.Split(x.key, ".")
-}
-
-// methods schema
-
-func (x *device) Print(key string, n int) {
-	if x.Get() != nil {
-		return
-	} else {
-		fmt.Printf("%s Device: %s\n", strings.Repeat(" ", n), key)
-	}
-
+func (x *device) Print(nodeName string, n int) {
+	fmt.Printf("%s Device Name: %s\n", nodeName, strings.Repeat(" ", n))
 	n++
-	for key, i := range x.GetInterfaces() {
-		i.Print(key, n)
+	for itfceName, i := range x.GetInterfaces() {
+		i.Print(itfceName, n)
 	}
-	for key, i := range x.GetNetworkInstances() {
-		i.Print(key, n)
-	}
-	for key, i := range x.GetSystemPlatforms() {
-		i.Print(key, n)
+	for niName, ni := range x.GetNetworkInstances() {
+		ni.Print(niName, n)
 	}
 }
 
 func (x *device) DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error {
-	if x.Get() != nil {
-		return nil
-	}
-	for _, r := range x.GetInterfaces() {
-		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
+	for _, i := range x.GetInterfaces() {
+		if err := i.DeploySchema(ctx, mg, deviceName, labels); err != nil {
 			return err
 		}
 	}
-	for _, r := range x.GetNetworkInstances() {
-		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
-			return err
-		}
-	}
-	for _, r := range x.GetSystemPlatforms() {
-		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
+	for _, ni := range x.GetNetworkInstances() {
+		if err := ni.DeploySchema(ctx, mg, deviceName, labels); err != nil {
 			return err
 		}
 	}
@@ -184,18 +124,16 @@ func (x *device) DeploySchema(ctx context.Context, mg resource.Managed, deviceNa
 }
 
 func (x *device) InitializeDummySchema() {
-	c0 := x.NewInterface(x.client, "dummy")
-	c0.InitializeDummySchema()
-	c1 := x.NewNetworkInstance(x.client, "dummy")
-	c1.InitializeDummySchema()
-	c2 := x.NewSystemPlatform(x.client, "dummy")
-	c2.InitializeDummySchema()
+	i := x.NewInterface(x.client, "dummy")
+	i.InitializeDummySchema()
+	ni := x.NewNetworkInstance(x.client, "dummy")
+	ni.InitializeDummySchema()
+	p := x.NewSystemPlatform(x.client, "dummy")
+	p.InitializeDummySchema()
+
 }
 
 func (x *device) ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error {
-	// local CR list
-
-	// children
 	for _, i := range x.GetInterfaces() {
 		if err := i.ListResources(ctx, mg, resources); err != nil {
 			return err
@@ -215,9 +153,6 @@ func (x *device) ListResources(ctx context.Context, mg resource.Managed, resourc
 }
 
 func (x *device) ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error {
-	// local CR validation
-
-	// children
 	for _, i := range x.GetInterfaces() {
 		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
 			return err
@@ -237,9 +172,6 @@ func (x *device) ValidateResources(ctx context.Context, mg resource.Managed, dev
 }
 
 func (x *device) DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error {
-	// local CR deletion
-
-	// children
 	for _, i := range x.GetInterfaces() {
 		if err := i.DeleteResources(ctx, mg, resources); err != nil {
 			return err
@@ -255,6 +187,5 @@ func (x *device) DeleteResources(ctx context.Context, mg resource.Managed, resou
 			return err
 		}
 	}
-
 	return nil
 }

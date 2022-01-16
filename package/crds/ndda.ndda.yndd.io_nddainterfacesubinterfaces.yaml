@@ -6,14 +6,14 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.4.1
   creationTimestamp: null
-  name: networkinterfacesubinterfaces.network.ndda.yndd.io
+  name: nddainterfacesubinterfaces.ndda.ndda.yndd.io
 spec:
-  group: network.ndda.yndd.io
+  group: ndda.ndda.yndd.io
   names:
-    kind: NetworkInterfaceSubinterface
-    listKind: NetworkInterfaceSubinterfaceList
-    plural: networkinterfacesubinterfaces
-    singular: networkinterfacesubinterface
+    kind: NddaInterfaceSubinterface
+    listKind: NddaInterfaceSubinterfaceList
+    plural: nddainterfacesubinterfaces
+    singular: nddainterfacesubinterface
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -29,7 +29,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: NetworkInterfaceSubinterface is the Schema for the InterfaceSubinterface
+        description: NddaInterfaceSubinterface is the Schema for the InterfaceSubinterface
           API
         properties:
           apiVersion:
@@ -61,7 +61,7 @@ spec:
                         format: int32
                         type: integer
                       inner-vlan-id:
-                        description: kubebuilder:validation:Minimum=0 kubebuilder:validation:Maximum=4094
+                        description: kubebuilder:validation:Minimum=1 kubebuilder:validation:Maximum=4094
                         type: integer
                       kind:
                         description: "import ( \t\"reflect\" \n \tmetav1 \"k8s.io/apimachinery/pkg/apis/meta/v1\"
@@ -72,7 +72,7 @@ spec:
                         - ROUTED
                         type: string
                       outer-vlan-id:
-                        description: kubebuilder:validation:Minimum=0 kubebuilder:validation:Maximum=4094
+                        description: kubebuilder:validation:Minimum=1 kubebuilder:validation:Maximum=4094
                         type: integer
                     type: object
                   index:

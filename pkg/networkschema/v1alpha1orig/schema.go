@@ -24,11 +24,9 @@ import (
 )
 
 type Schema interface {
-	// methods children
 	NewDevice(c resource.ClientApplicator, name string) Device
 	GetDevices() map[string]Device
 	PrintDevices(n string)
-	// methods schema/data
 	DeploySchema(ctx context.Context, mg resource.Managed, labels map[string]string) error
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed) (map[string]map[string]interface{}, error)
@@ -38,9 +36,8 @@ type Schema interface {
 
 func NewSchema(c resource.ClientApplicator) Schema {
 	return &schema{
-		// k8s client
 		client: c,
-		// parent is nil/root
+		// parent nil
 		// children
 		devices: make(map[string]Device),
 		// data key
@@ -48,9 +45,8 @@ func NewSchema(c resource.ClientApplicator) Schema {
 }
 
 type schema struct {
-	// k8s client
 	client resource.ClientApplicator
-	// parent is nil/root
+	// parent is nil
 	// children
 	devices map[string]Device
 	// data is nil

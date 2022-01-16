@@ -37,12 +37,12 @@ type InterfaceSubinterfaceConfig struct {
 	// kubebuilder:validation:Minimum=0
 	// kubebuilder:validation:Maximum=9999
 	Index *uint32 `json:"index,omitempty"`
-	// kubebuilder:validation:Minimum=0
+	// kubebuilder:validation:Minimum=1
 	// kubebuilder:validation:Maximum=4094
 	InnerVlanId *uint16 `json:"inner-vlan-id,omitempty"`
 	// +kubebuilder:validation:Enum=`BRIDGED`;`ROUTED`
 	Kind E_InterfaceSubinterfaceKind `json:"kind,omitempty"`
-	// kubebuilder:validation:Minimum=0
+	// kubebuilder:validation:Minimum=1
 	// kubebuilder:validation:Maximum=4094
 	OuterVlanId *uint16 `json:"outer-vlan-id,omitempty"`
 }

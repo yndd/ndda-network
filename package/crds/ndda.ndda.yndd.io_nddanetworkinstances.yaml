@@ -6,14 +6,14 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.4.1
   creationTimestamp: null
-  name: networknetworkinstances.network.ndda.yndd.io
+  name: nddanetworkinstances.ndda.ndda.yndd.io
 spec:
-  group: network.ndda.yndd.io
+  group: ndda.ndda.yndd.io
   names:
-    kind: NetworkNetworkInstance
-    listKind: NetworkNetworkInstanceList
-    plural: networknetworkinstances
-    singular: networknetworkinstance
+    kind: NddaNetworkInstance
+    listKind: NddaNetworkInstanceList
+    plural: nddanetworkinstances
+    singular: nddanetworkinstance
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -29,8 +29,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: NetworkNetworkInstance is the Schema for the NetworkInstance
-          API
+        description: NddaNetworkInstance is the Schema for the NetworkInstance API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation

@@ -24,12 +24,11 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/yndd/ndd-runtime/pkg/meta"
+	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 	"github.com/yndd/nddo-runtime/pkg/odns"
 	"github.com/yndd/nddo-runtime/pkg/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 )
 
 const (
@@ -43,11 +42,11 @@ type Interface interface {
 	NewInterfaceSubinterface(c resource.ClientApplicator, key string) InterfaceSubinterface
 	GetInterfaceSubinterfaces() map[string]InterfaceSubinterface
 	// methods data
-	GetKey() []string
-	Get() *networkv1alpha1.Interface
 	Update(x *networkv1alpha1.Interface)
-	// methods schema
-	Print(key string, n int)
+	Get() *networkv1alpha1.Interface
+	GetKey() string
+
+	Print(itfceName string, n int)
 	DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
@@ -58,7 +57,6 @@ type Interface interface {
 func NewInterface(c resource.ClientApplicator, p Device, key string) Interface {
 	newInterfaceList := func() networkv1alpha1.IFNetworkInterfaceList { return &networkv1alpha1.NetworkInterfaceList{} }
 	return &itfce{
-		// k8s client
 		client: c,
 		// key
 		key: key,
@@ -75,7 +73,6 @@ func NewInterface(c resource.ClientApplicator, p Device, key string) Interface {
 }
 
 type itfce struct {
-	// k8s client
 	client resource.ClientApplicator
 	// key
 	key string
@@ -84,37 +81,15 @@ type itfce struct {
 	// children
 	InterfaceSubinterface map[string]InterfaceSubinterface
 	// Data
-	Interface        *networkv1alpha1.Interface
+	Interface *networkv1alpha1.Interface
+
 	newInterfaceList func() networkv1alpha1.IFNetworkInterfaceList
 }
 
-// key type/method
-
-type InterfaceKey struct {
-	Name string
-}
-
-func WithInterfaceKey(key *InterfaceKey) string {
-	d, err := json.Marshal(key)
-	if err != nil {
-		return ""
-	}
-	var x1 interface{}
-	json.Unmarshal(d, &x1)
-
-	switch k := x1.(type) {
-	case map[string]string:
-		ssl := toStrings(k)
-		return toString(ssl)
-	default:
-		return ""
-	}
-}
-
-// methods children
+// children
 func (x *itfce) NewInterfaceSubinterface(c resource.ClientApplicator, key string) InterfaceSubinterface {
 	if _, ok := x.InterfaceSubinterface[key]; !ok {
-		x.InterfaceSubinterface[key] = NewInterfaceSubinterface(c, x, key)
+		x.InterfaceSubinterface[key] = NewInterfaceSubinterface(x.client, x, key)
 	}
 	return x.InterfaceSubinterface[key]
 }
@@ -122,23 +97,20 @@ func (x *itfce) GetInterfaceSubinterfaces() map[string]InterfaceSubinterface {
 	return x.InterfaceSubinterface
 }
 
-// Data methods
+// Data
 func (x *itfce) Update(d *networkv1alpha1.Interface) {
 	x.Interface = d
 }
 
-// methods data
 func (x *itfce) Get() *networkv1alpha1.Interface {
 	return x.Interface
 }
 
-func (x *itfce) GetKey() []string {
-	return strings.Split(x.key, ".")
+func (x *itfce) GetKey() string {
+	return x.key
 }
 
-// methods schema
-
-func (x *itfce) Print(key string, n int) {
+func (x *itfce) Print(itfceName string, n int) {
 	if x.Get() != nil {
 		d, err := json.Marshal(x.Interface)
 		if err != nil {
@@ -146,20 +118,20 @@ func (x *itfce) Print(key string, n int) {
 		}
 		var x1 interface{}
 		json.Unmarshal(d, &x1)
-		fmt.Printf("%s Interface: %s Data: %v\n", strings.Repeat(" ", n), key, x1)
+		fmt.Printf("%s Interface: %s Data: %v\n", strings.Repeat(" ", n), itfceName, x1)
 	} else {
-		fmt.Printf("%s Interface: %s\n", strings.Repeat(" ", n), key)
+		fmt.Printf("%s Interface: %s\n", strings.Repeat(" ", n), itfceName)
 	}
 
 	n++
-	for key, i := range x.GetInterfaceSubinterfaces() {
-		i.Print(key, n)
+	for subItfceName, i := range x.GetInterfaceSubinterfaces() {
+		i.Print(subItfceName, n)
 	}
 }
 
 func (x *itfce) DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error {
 	if x.Get() != nil {
-		o := x.buildCR(mg, deviceName, labels)
+		o := x.buildNddaNetworkInterface(mg, deviceName, labels)
 		if err := x.client.Apply(ctx, o); err != nil {
 			return errors.Wrap(err, errCreateInterface)
 		}
@@ -172,18 +144,17 @@ func (x *itfce) DeploySchema(ctx context.Context, mg resource.Managed, deviceNam
 
 	return nil
 }
-func (x *itfce) buildCR(mg resource.Managed, deviceName string, labels map[string]string) *networkv1alpha1.NetworkInterface {
-	key0 := strings.ReplaceAll(*x.Interface.Name, "/", "-")
+
+func (x *itfce) buildNddaNetworkInterface(mg resource.Managed, deviceName string, labels map[string]string) *networkv1alpha1.NetworkInterface {
+	itfceName := strings.ReplaceAll(*x.Interface.Name, "/", "-")
 
 	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
-		[]string{
-			key0,
-			deviceName})
+		[]string{itfceName, deviceName})
 
 	labels[networkv1alpha1.LabelNddaDeploymentPolicy] = string(mg.GetDeploymentPolicy())
 	labels[networkv1alpha1.LabelNddaOwner] = odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))
 	labels[networkv1alpha1.LabelNddaDevice] = deviceName
-	//labels[networkv1alpha1.LabelNddaItfce] = itfceName
+	labels[networkv1alpha1.LabelNddaItfce] = itfceName
 	return &networkv1alpha1.NetworkInterface{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:            resourceName,
@@ -198,12 +169,12 @@ func (x *itfce) buildCR(mg resource.Managed, deviceName string, labels map[strin
 }
 
 func (x *itfce) InitializeDummySchema() {
-	c0 := x.NewInterfaceSubinterface(x.client, "dummy")
-	c0.InitializeDummySchema()
+	si := x.NewInterfaceSubinterface(x.client, "dummy")
+	si.InitializeDummySchema()
+
 }
 
 func (x *itfce) ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error {
-	// local CR list
 	opts := []client.ListOption{
 		client.MatchingLabels{networkv1alpha1.LabelNddaOwner: odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))},
 	}
@@ -220,7 +191,6 @@ func (x *itfce) ListResources(ctx context.Context, mg resource.Managed, resource
 
 	}
 
-	// children
 	for _, i := range x.GetInterfaceSubinterfaces() {
 		if err := i.ListResources(ctx, mg, resources); err != nil {
 			return err
@@ -230,31 +200,26 @@ func (x *itfce) ListResources(ctx context.Context, mg resource.Managed, resource
 }
 
 func (x *itfce) ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error {
-	// local CR validation
 	if x.Get() != nil {
-		key0 := strings.ReplaceAll(*x.Interface.Name, "/", "-")
+		itfceName := strings.ReplaceAll(*x.Interface.Name, "/", "-")
 
 		resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
-			[]string{
-				key0,
-				deviceName})
+			[]string{itfceName, deviceName})
 
 		if r, ok := resources[networkv1alpha1.InterfaceKindKind]; ok {
 			delete(r, resourceName)
 		}
 	}
-
-	// children
 	for _, i := range x.GetInterfaceSubinterfaces() {
 		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
 func (x *itfce) DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error {
-	// local CR deletion
 	if res, ok := resources[networkv1alpha1.InterfaceKindKind]; ok {
 		for resName := range res {
 			o := &networkv1alpha1.NetworkInterface{
@@ -269,12 +234,10 @@ func (x *itfce) DeleteResources(ctx context.Context, mg resource.Managed, resour
 		}
 	}
 
-	// children
 	for _, i := range x.GetInterfaceSubinterfaces() {
 		if err := i.DeleteResources(ctx, mg, resources); err != nil {
 			return err
 		}
 	}
-
 	return nil
 }

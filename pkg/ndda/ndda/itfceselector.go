@@ -18,7 +18,7 @@ func (r *handler) GetSelectedNodeItfces(mg resource.Managed, epgSelectors []*ndd
 	fmt.Printf("opts: %v\n", opts)
 	nddaItfces := r.newNetworkItfceList()
 	if err := r.client.List(r.ctx, nddaItfces); err != nil {
-	//if err := r.client.List(r.ctx, nddaItfces, opts...); err != nil {
+		//if err := r.client.List(r.ctx, nddaItfces, opts...); err != nil {
 		return nil, err
 	}
 
