@@ -18,6 +18,7 @@ package networkschema
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -111,7 +112,13 @@ func (x *itfce) GetKey() string {
 
 func (x *itfce) Print(itfceName string, n int) {
 	if x.Get() != nil {
-		fmt.Printf("%s Interface: %s Kind: %s LAG: %t, LAG Member: %t\n", strings.Repeat(" ", n), itfceName, x.Interface.Config.Kind, *x.Interface.Config.Lag, *x.Interface.Config.LagMember)
+		d, err := json.Marshal(x.Interface)
+		if err != nil {
+			return
+		}
+		var x1 interface{}
+		json.Unmarshal(d, &x1)
+		fmt.Printf("%s Interface: %s Data: %v\n", strings.Repeat(" ", n), itfceName, x1)
 	} else {
 		fmt.Printf("%s Interface: %s\n", strings.Repeat(" ", n), itfceName)
 	}

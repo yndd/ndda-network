@@ -32,7 +32,7 @@ type Device interface {
 	GetInterfaces() map[string]Interface
 	GetNetworkInstances() map[string]NetworkInstance
 	GetSystemPlatforms() map[string]SystemPlatform
-	// methods data
+	// methods schema/data
 	Print(nodeName string, n int)
 	DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error
 	InitializeDummySchema()
@@ -98,7 +98,7 @@ func (x *device) GetSystemPlatforms() map[string]SystemPlatform {
 }
 
 func (x *device) Print(nodeName string, n int) {
-	fmt.Printf("%s Node Name: %s\n", nodeName, strings.Repeat(" ", n))
+	fmt.Printf("%s Device Name: %s\n", nodeName, strings.Repeat(" ", n))
 	n++
 	for itfceName, i := range x.GetInterfaces() {
 		i.Print(itfceName, n)
