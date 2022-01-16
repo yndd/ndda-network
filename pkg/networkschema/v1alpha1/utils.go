@@ -21,6 +21,23 @@ import (
 	"strings"
 )
 
+func getKey(x1 interface{}) string {
+	switch x := x1.(type) {
+	case map[string]interface{}:
+		keys := make(map[string]string)
+		for k, v := range x {
+			switch vv := v.(type) {
+			case string:
+				keys[k] = vv
+			}
+		}
+		ssl := toStrings(keys)
+		return toString(ssl)
+	default:
+		return ""
+	}
+}
+
 func toStrings(keys map[string]string) []string {
 	str := make([]string, 0)
 	switch len(keys) {
