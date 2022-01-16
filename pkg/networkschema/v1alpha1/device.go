@@ -92,13 +92,7 @@ func WithDeviceKey(key *DeviceKey) string {
 	var x1 interface{}
 	json.Unmarshal(d, &x1)
 
-	switch k := x1.(type) {
-	case map[string]string:
-		ssl := toStrings(k)
-		return toString(ssl)
-	default:
-		return ""
-	}
+	return getKey(x1)
 }
 
 // methods children

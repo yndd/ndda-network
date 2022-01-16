@@ -101,13 +101,7 @@ func WithNetworkInstanceKey(key *NetworkInstanceKey) string {
 	var x1 interface{}
 	json.Unmarshal(d, &x1)
 
-	switch k := x1.(type) {
-	case map[string]string:
-		ssl := toStrings(k)
-		return toString(ssl)
-	default:
-		return ""
-	}
+	return getKey(x1)
 }
 
 // methods children
@@ -163,8 +157,8 @@ func (x *networkinstance) buildCR(mg resource.Managed, deviceName string, labels
 
 	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
 		[]string{
-			key0,
-			deviceName})
+			strings.ToLower(key0),
+			strings.ToLower(deviceName)})
 
 	labels[networkv1alpha1.LabelNddaDeploymentPolicy] = string(mg.GetDeploymentPolicy())
 	labels[networkv1alpha1.LabelNddaOwner] = odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))
@@ -215,8 +209,8 @@ func (x *networkinstance) ValidateResources(ctx context.Context, mg resource.Man
 
 		resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
 			[]string{
-				key0,
-				deviceName})
+				strings.ToLower(key0),
+				strings.ToLower(deviceName)})
 
 		if r, ok := resources[networkv1alpha1.NetworkInstanceKindKind]; ok {
 			delete(r, resourceName)

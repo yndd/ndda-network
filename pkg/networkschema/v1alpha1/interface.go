@@ -102,9 +102,7 @@ func WithInterfaceKey(key *InterfaceKey) string {
 	var x1 interface{}
 	json.Unmarshal(d, &x1)
 
-	fmt.Printf("WithInterfaceKey: x1: %v\n", getKey(x1))
 	return getKey(x1)
-	
 }
 
 // methods children
@@ -173,8 +171,8 @@ func (x *itfce) buildCR(mg resource.Managed, deviceName string, labels map[strin
 
 	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
 		[]string{
-			key0,
-			deviceName})
+			strings.ToLower(key0),
+			strings.ToLower(deviceName)})
 
 	labels[networkv1alpha1.LabelNddaDeploymentPolicy] = string(mg.GetDeploymentPolicy())
 	labels[networkv1alpha1.LabelNddaOwner] = odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))
@@ -232,8 +230,8 @@ func (x *itfce) ValidateResources(ctx context.Context, mg resource.Managed, devi
 
 		resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
 			[]string{
-				key0,
-				deviceName})
+				strings.ToLower(key0),
+				strings.ToLower(deviceName)})
 
 		if r, ok := resources[networkv1alpha1.InterfaceKindKind]; ok {
 			delete(r, resourceName)

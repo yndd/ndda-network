@@ -159,18 +159,16 @@ func (x *interfacesubinterface) DeploySchema(ctx context.Context, mg resource.Ma
 	return nil
 }
 func (x *interfacesubinterface) buildCR(mg resource.Managed, deviceName string, labels map[string]string) *networkv1alpha1.NetworkInterfaceSubinterface {
-	fmt.Printf("buildCR: interfacesubinterface: %v\n", x.parent.GetKey())
-	
 	parent0Key0 := strings.ReplaceAll(x.parent.GetKey()[0], "/", "-")
 	//1
 	key0 := strings.ReplaceAll(*x.InterfaceSubinterface.Index, "/", "-")
 
 	resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
 		[]string{
-			parent0Key0,
+			strings.ToLower(parent0Key0),
 			//1
-			key0,
-			deviceName})
+			strings.ToLower(key0),
+			strings.ToLower(deviceName)})
 
 	labels[networkv1alpha1.LabelNddaDeploymentPolicy] = string(mg.GetDeploymentPolicy())
 	labels[networkv1alpha1.LabelNddaOwner] = odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))
@@ -225,9 +223,9 @@ func (x *interfacesubinterface) ValidateResources(ctx context.Context, mg resour
 
 		resourceName := odns.GetOdnsResourceName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind),
 			[]string{
-				parent0Key0,
-				key0,
-				deviceName})
+				strings.ToLower(parent0Key0),
+				strings.ToLower(key0),
+				strings.ToLower(deviceName)})
 
 		if r, ok := resources[networkv1alpha1.InterfaceSubinterfaceKindKind]; ok {
 			delete(r, resourceName)
