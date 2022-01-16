@@ -27,12 +27,12 @@ import (
 
 type Device interface {
 	// methods children
+	NewSystemPlatform(c resource.ClientApplicator, key string) SystemPlatform
 	NewInterface(c resource.ClientApplicator, key string) Interface
 	NewNetworkInstance(c resource.ClientApplicator, key string) NetworkInstance
-	NewSystemPlatform(c resource.ClientApplicator, key string) SystemPlatform
+	GetSystemPlatforms() map[string]SystemPlatform
 	GetInterfaces() map[string]Interface
 	GetNetworkInstances() map[string]NetworkInstance
-	GetSystemPlatforms() map[string]SystemPlatform
 	// methods data
 	GetKey() []string
 	Get() interface{}
@@ -54,9 +54,9 @@ func NewDevice(c resource.ClientApplicator, p Schema, key string) Device {
 		// parent
 		parent: p,
 		// children
+		SystemPlatform:  make(map[string]SystemPlatform),
 		Interface:       make(map[string]Interface),
 		NetworkInstance: make(map[string]NetworkInstance),
-		SystemPlatform:  make(map[string]SystemPlatform),
 		// data key
 		//Device: &networkv1alpha1.Device{
 		//	Name: &name,
@@ -72,9 +72,9 @@ type device struct {
 	// parent
 	parent Schema
 	// children
+	SystemPlatform  map[string]SystemPlatform
 	Interface       map[string]Interface
 	NetworkInstance map[string]NetworkInstance
-	SystemPlatform  map[string]SystemPlatform
 	// Data
 }
 
@@ -102,6 +102,12 @@ func WithDeviceKey(key *DeviceKey) string {
 }
 
 // methods children
+func (x *device) NewSystemPlatform(c resource.ClientApplicator, key string) SystemPlatform {
+	if _, ok := x.SystemPlatform[key]; !ok {
+		x.SystemPlatform[key] = NewSystemPlatform(c, x, key)
+	}
+	return x.SystemPlatform[key]
+}
 func (x *device) NewInterface(c resource.ClientApplicator, key string) Interface {
 	if _, ok := x.Interface[key]; !ok {
 		x.Interface[key] = NewInterface(c, x, key)
@@ -114,20 +120,14 @@ func (x *device) NewNetworkInstance(c resource.ClientApplicator, key string) Net
 	}
 	return x.NetworkInstance[key]
 }
-func (x *device) NewSystemPlatform(c resource.ClientApplicator, key string) SystemPlatform {
-	if _, ok := x.SystemPlatform[key]; !ok {
-		x.SystemPlatform[key] = NewSystemPlatform(c, x, key)
-	}
-	return x.SystemPlatform[key]
+func (x *device) GetSystemPlatforms() map[string]SystemPlatform {
+	return x.SystemPlatform
 }
 func (x *device) GetInterfaces() map[string]Interface {
 	return x.Interface
 }
 func (x *device) GetNetworkInstances() map[string]NetworkInstance {
 	return x.NetworkInstance
-}
-func (x *device) GetSystemPlatforms() map[string]SystemPlatform {
-	return x.SystemPlatform
 }
 
 // methods data
@@ -149,13 +149,13 @@ func (x *device) Print(key string, n int) {
 	}
 
 	n++
+	for key, i := range x.GetSystemPlatforms() {
+		i.Print(key, n)
+	}
 	for key, i := range x.GetInterfaces() {
 		i.Print(key, n)
 	}
 	for key, i := range x.GetNetworkInstances() {
-		i.Print(key, n)
-	}
-	for key, i := range x.GetSystemPlatforms() {
 		i.Print(key, n)
 	}
 }
@@ -163,6 +163,11 @@ func (x *device) Print(key string, n int) {
 func (x *device) DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error {
 	if x.Get() != nil {
 		return nil
+	}
+	for _, r := range x.GetSystemPlatforms() {
+		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
+			return err
+		}
 	}
 	for _, r := range x.GetInterfaces() {
 		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
@@ -174,21 +179,16 @@ func (x *device) DeploySchema(ctx context.Context, mg resource.Managed, deviceNa
 			return err
 		}
 	}
-	for _, r := range x.GetSystemPlatforms() {
-		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
-			return err
-		}
-	}
 
 	return nil
 }
 
 func (x *device) InitializeDummySchema() {
-	c0 := x.NewInterface(x.client, "dummy")
+	c0 := x.NewSystemPlatform(x.client, "dummy")
 	c0.InitializeDummySchema()
-	c1 := x.NewNetworkInstance(x.client, "dummy")
+	c1 := x.NewInterface(x.client, "dummy")
 	c1.InitializeDummySchema()
-	c2 := x.NewSystemPlatform(x.client, "dummy")
+	c2 := x.NewNetworkInstance(x.client, "dummy")
 	c2.InitializeDummySchema()
 }
 
@@ -196,17 +196,17 @@ func (x *device) ListResources(ctx context.Context, mg resource.Managed, resourc
 	// local CR list
 
 	// children
+	for _, i := range x.GetSystemPlatforms() {
+		if err := i.ListResources(ctx, mg, resources); err != nil {
+			return err
+		}
+	}
 	for _, i := range x.GetInterfaces() {
 		if err := i.ListResources(ctx, mg, resources); err != nil {
 			return err
 		}
 	}
 	for _, i := range x.GetNetworkInstances() {
-		if err := i.ListResources(ctx, mg, resources); err != nil {
-			return err
-		}
-	}
-	for _, i := range x.GetSystemPlatforms() {
 		if err := i.ListResources(ctx, mg, resources); err != nil {
 			return err
 		}
@@ -218,17 +218,17 @@ func (x *device) ValidateResources(ctx context.Context, mg resource.Managed, dev
 	// local CR validation
 
 	// children
+	for _, i := range x.GetSystemPlatforms() {
+		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
+			return err
+		}
+	}
 	for _, i := range x.GetInterfaces() {
 		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
 			return err
 		}
 	}
 	for _, i := range x.GetNetworkInstances() {
-		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
-			return err
-		}
-	}
-	for _, i := range x.GetSystemPlatforms() {
 		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
 			return err
 		}
@@ -240,17 +240,17 @@ func (x *device) DeleteResources(ctx context.Context, mg resource.Managed, resou
 	// local CR deletion
 
 	// children
+	for _, i := range x.GetSystemPlatforms() {
+		if err := i.DeleteResources(ctx, mg, resources); err != nil {
+			return err
+		}
+	}
 	for _, i := range x.GetInterfaces() {
 		if err := i.DeleteResources(ctx, mg, resources); err != nil {
 			return err
 		}
 	}
 	for _, i := range x.GetNetworkInstances() {
-		if err := i.DeleteResources(ctx, mg, resources); err != nil {
-			return err
-		}
-	}
-	for _, i := range x.GetSystemPlatforms() {
 		if err := i.DeleteResources(ctx, mg, resources); err != nil {
 			return err
 		}
