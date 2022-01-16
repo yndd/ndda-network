@@ -102,6 +102,8 @@ func WithInterfaceKey(key *InterfaceKey) string {
 	var x1 interface{}
 	json.Unmarshal(d, &x1)
 
+	fmt.Printf("WithInterfaceKey: x1: %v\n", x1)
+
 	switch k := x1.(type) {
 	case map[string]string:
 		ssl := toStrings(k)

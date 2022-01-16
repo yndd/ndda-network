@@ -165,6 +165,8 @@ func (x *interfacesubinterface) DeploySchema(ctx context.Context, mg resource.Ma
 	return nil
 }
 func (x *interfacesubinterface) buildCR(mg resource.Managed, deviceName string, labels map[string]string) *networkv1alpha1.NetworkInterfaceSubinterface {
+	fmt.Printf("buildCR: interfacesubinterface: %v\n", x.parent.GetKey())
+	
 	parent0Key0 := strings.ReplaceAll(x.parent.GetKey()[0], "/", "-")
 	//1
 	key0 := strings.ReplaceAll(*x.InterfaceSubinterface.Index, "/", "-")
