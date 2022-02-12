@@ -47,6 +47,14 @@ func WithItfceKind(s networkv1alpha1.E_InterfaceKind) ItfceInfoOption {
 }
 */
 
+func GetBdName(bdName string) string {
+	return strings.Join([]string{bdName, strings.ToLower(string(networkv1alpha1.E_NetworkInstanceKind_BRIDGED))}, "-")
+}
+
+func GetRtName(rtName string) string {
+	return strings.Join([]string{rtName, strings.ToLower(string(networkv1alpha1.E_NetworkInstanceKind_ROUTED))}, "-")
+}
+
 func NewNiInfo(opts ...NiInfoOption) *NiInfo {
 	i := &NiInfo{}
 
@@ -60,7 +68,6 @@ func NewNiInfo(opts ...NiInfoOption) *NiInfo {
 type NiInfo struct {
 	Name     *string
 	Index    *uint32
-	Kind     networkv1alpha1.E_NetworkInstanceKind
 	Registry *string
 }
 
@@ -72,16 +79,8 @@ func (x *NiInfo) GetNiIndex() uint32 {
 	return *x.Index
 }
 
-func (x *NiInfo) GetNiKind() networkv1alpha1.E_NetworkInstanceKind {
-	return x.Kind
-}
-
-func (x *NiInfo) GetRegistry() string {
+func (x *NiInfo) GetNiRegistry() string {
 	return *x.Registry
-}
-
-func (x *NiInfo) GetNiFullName() string {
-	return strings.Join([]string{*x.Name, strings.ToLower(string(x.Kind))}, "-")
 }
 
 func (x *NiInfo) SetNiName(s string) {
@@ -92,6 +91,6 @@ func (x *NiInfo) SetNiIndex(s uint32) {
 	x.Index = &s
 }
 
-func (x *NiInfo) SetNiKind(s networkv1alpha1.E_NetworkInstanceKind) {
-	x.Kind = s
+func (x *NiInfo) SetNiRegistry(s string) {
+	x.Registry = &s
 }
