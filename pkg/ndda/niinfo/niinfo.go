@@ -1,6 +1,8 @@
 package niinfo
 
 import (
+	"strings"
+
 	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 )
 
@@ -45,7 +47,7 @@ func WithItfceKind(s networkv1alpha1.E_InterfaceKind) ItfceInfoOption {
 }
 */
 
-func NewItfceInfo(opts ...NiInfoOption) *NiInfo {
+func NewNiInfo(opts ...NiInfoOption) *NiInfo {
 	i := &NiInfo{}
 
 	for _, f := range opts {
@@ -72,6 +74,14 @@ func (x *NiInfo) GetNiIndex() uint32 {
 
 func (x *NiInfo) GetNiKind() networkv1alpha1.E_NetworkInstanceKind {
 	return x.Kind
+}
+
+func (x *NiInfo) GetRegistry() string {
+	return *x.Registry
+}
+
+func (x *NiInfo) GetNiFullName() string {
+	return strings.Join([]string{*x.Name, strings.ToLower(string(x.Kind))}, "-")
 }
 
 func (x *NiInfo) SetNiName(s string) {
