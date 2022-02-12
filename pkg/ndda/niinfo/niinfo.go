@@ -94,3 +94,13 @@ func (x *NiInfo) SetNiIndex(s uint32) {
 func (x *NiInfo) SetNiRegistry(s string) {
 	x.Registry = &s
 }
+
+func (x *NiInfo) GetNiKind() networkv1alpha1.E_NetworkInstanceKind {
+	if strings.HasSuffix(*x.Name, string(networkv1alpha1.E_NetworkInstanceKind_BRIDGED)) {
+		return networkv1alpha1.E_NetworkInstanceKind_BRIDGED
+	}
+	if strings.HasSuffix(*x.Name, string(networkv1alpha1.E_NetworkInstanceKind_ROUTED)) {
+		return networkv1alpha1.E_NetworkInstanceKind_ROUTED
+	}
+	return ""
+}
