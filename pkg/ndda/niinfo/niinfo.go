@@ -56,9 +56,10 @@ func NewItfceInfo(opts ...NiInfoOption) *NiInfo {
 }
 
 type NiInfo struct {
-	Name  *string
-	Index *uint32
-	Kind  networkv1alpha1.E_NetworkInstanceKind
+	Name     *string
+	Index    *uint32
+	Kind     networkv1alpha1.E_NetworkInstanceKind
+	Registry *string
 }
 
 func (x *NiInfo) GetNiName() string {
