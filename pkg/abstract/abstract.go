@@ -10,5 +10,5 @@ import (
 
 type Abstract interface {
 	GetInterfaceName(itfcName string) (string, error)
-	GetSelectedNodeItfces(ctx context.Context, mg resource.Managed, epgSelectors []*nddov1.EpgInfo, nodeItfceSelectors map[string]*nddov1.ItfceInfo) (nodeitfceselector.SelectedNodes, error)
+	GetSelectedNodeItfces(ctx context.Context, mg resource.Managed, epgSelectors []*nddov1.EpgInfo, nodeItfceSelectors map[string]*nddov1.ItfceInfo) (*nodeitfceselector.SelectedNodes, error)
 }
