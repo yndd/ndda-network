@@ -1,5 +1,5 @@
 package abstract
 
-type Abstract interface{
-	GetInterfaceName(string) string
+type Abstract interface {
+	GetInterfaceName(itfcName string) (string, error)
 }
