@@ -3,20 +3,23 @@ package itfceinfo
 import (
 	"reflect"
 
-	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
+	"github.com/yndd/ndda-network/pkg/ygotndda"
+	//networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
 )
 
 type ItfceInfo interface {
 	GetItfceName() string
 	GetItfceIndex() uint32
-	GetItfceKind() networkv1alpha1.E_InterfaceKind
+	//GetItfceKind() networkv1alpha1.E_InterfaceKind
+	GetItfceKind() ygotndda.E_NddaCommon_InterfaceKind
 	GetInnerVlanId() uint16
 	GetOuterVlanId() uint16
 	GetIpv4Prefixes() []*string
 	GetIpv6Prefixes() []*string
 	SetItfceName(string)
 	SetItfceIndex(uint32)
-	SetItfceKind(networkv1alpha1.E_InterfaceKind)
+	//SetItfceKind(networkv1alpha1.E_InterfaceKind)
+	SetItfceKind(ygotndda.E_NddaCommon_InterfaceKind)
 	SetInnerVlanId(uint16)
 	SetOuterVlanId(uint16)
 	SetIpv4Prefixes([]*string)
@@ -37,11 +40,19 @@ func WithItfceIndex(s uint32) ItfceInfoOption {
 	}
 }
 
+func WithItfceKind(s ygotndda.E_NddaCommon_InterfaceKind) ItfceInfoOption {
+	return func(r *itfceInfo) {
+		r.itfceKind = s
+	}
+}
+
+/*
 func WithItfceKind(s networkv1alpha1.E_InterfaceKind) ItfceInfoOption {
 	return func(r *itfceInfo) {
 		r.itfceKind = s
 	}
 }
+*/
 
 func WithInnerVlanId(s uint16) ItfceInfoOption {
 	return func(r *itfceInfo) {
@@ -81,9 +92,10 @@ func NewItfceInfo(opts ...ItfceInfoOption) ItfceInfo {
 }
 
 type itfceInfo struct {
-	itfceName    *string
-	itfceIndex   *uint32
-	itfceKind    networkv1alpha1.E_InterfaceKind
+	itfceName  *string
+	itfceIndex *uint32
+	//itfceKind    networkv1alpha1.E_InterfaceKind
+	itfceKind    ygotndda.E_NddaCommon_InterfaceKind
 	innerVlanId  *uint16
 	outerVlanId  *uint16
 	ipv4Prefixes []*string
@@ -98,7 +110,7 @@ func (x *itfceInfo) GetItfceIndex() uint32 {
 	return *x.itfceIndex
 }
 
-func (x *itfceInfo) GetItfceKind() networkv1alpha1.E_InterfaceKind {
+func (x *itfceInfo) GetItfceKind() ygotndda.E_NddaCommon_InterfaceKind {
 	return x.itfceKind
 }
 
@@ -132,7 +144,7 @@ func (x *itfceInfo) SetItfceIndex(s uint32) {
 	x.itfceIndex = &s
 }
 
-func (x *itfceInfo) SetItfceKind(s networkv1alpha1.E_InterfaceKind) {
+func (x *itfceInfo) SetItfceKind(s ygotndda.E_NddaCommon_InterfaceKind) {
 	x.itfceKind = s
 }
 

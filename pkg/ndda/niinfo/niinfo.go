@@ -2,8 +2,8 @@ package niinfo
 
 import (
 	"strings"
-
-	networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
+	//networkv1alpha1 "github.com/yndd/ndda-network/apis/network/v1alpha1"
+	"github.com/yndd/ndda-network/pkg/ygotndda"
 )
 
 /*
@@ -48,11 +48,13 @@ func WithItfceKind(s networkv1alpha1.E_InterfaceKind) ItfceInfoOption {
 */
 
 func GetBdName(bdName string) string {
-	return strings.Join([]string{bdName, strings.ToLower(string(networkv1alpha1.E_NetworkInstanceKind_BRIDGED))}, "-")
+	return strings.Join([]string{bdName, strings.ToLower(ygotndda.NddaCommon_NiKind_BRIDGED.String())}, "-")
+	//return strings.Join([]string{bdName, strings.ToLower(string(networkv1alpha1.E_NetworkInstanceKind_BRIDGED))}, "-")
 }
 
 func GetRtName(rtName string) string {
-	return strings.Join([]string{rtName, strings.ToLower(string(networkv1alpha1.E_NetworkInstanceKind_ROUTED))}, "-")
+	return strings.Join([]string{rtName, strings.ToLower(ygotndda.NddaCommon_NiKind_ROUTED.String())}, "-")
+	//return strings.Join([]string{rtName, strings.ToLower(string(networkv1alpha1.E_NetworkInstanceKind_ROUTED))}, "-")
 }
 
 func NewNiInfo(opts ...NiInfoOption) *NiInfo {
@@ -95,6 +97,17 @@ func (x *NiInfo) SetNiRegistry(s string) {
 	x.Registry = &s
 }
 
+func (x *NiInfo) GetNiKind() ygotndda.E_NddaCommon_NiKind {
+	if strings.HasSuffix(*x.Name, strings.ToLower(ygotndda.NddaCommon_NiKind_BRIDGED.String())) {
+		return ygotndda.NddaCommon_NiKind_BRIDGED
+	}
+	if strings.HasSuffix(*x.Name, strings.ToLower(ygotndda.NddaCommon_NiKind_ROUTED.String())) {
+		return ygotndda.NddaCommon_NiKind_ROUTED
+	}
+	return ygotndda.NddaCommon_NiKind_UNSET
+}
+
+/*
 func (x *NiInfo) GetNiKind() networkv1alpha1.E_NetworkInstanceKind {
 	if strings.HasSuffix(*x.Name, strings.ToLower(string(networkv1alpha1.E_NetworkInstanceKind_BRIDGED))) {
 		return networkv1alpha1.E_NetworkInstanceKind_BRIDGED
@@ -104,3 +117,4 @@ func (x *NiInfo) GetNiKind() networkv1alpha1.E_NetworkInstanceKind {
 	}
 	return ""
 }
+*/
