@@ -11,7 +11,7 @@ import (
 	"github.com/yndd/nddo-runtime/pkg/resource"
 )
 
-type Interface struct{
+type Interface struct {
 	name string
 }
 
@@ -24,10 +24,10 @@ func Name(s string) Option {
 func (x *Interface) IsAbstracted() bool
 
 func (x *Interface) WithName(s string) {
-	x.name= s
+	x.name = s
 }
 
-type Object interface{
+type Object interface {
 	IsAbstracted() bool
 	Name(s string)
 }
@@ -50,7 +50,7 @@ func New(c resource.ClientApplicator, name string) *Compositeabstraction {
 }
 
 type Compositeabstraction struct {
-	name         string
+	name string
 	// k8s client
 	client       resource.ClientApplicator
 	m            sync.Mutex
