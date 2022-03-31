@@ -21,7 +21,9 @@ func Name(s string) Option {
 	}
 }
 
-func (x *Interface) IsAbstracted() bool
+func (x *Interface) IsAbstracted() bool {
+	return true
+}
 
 func (x *Interface) WithName(s string) {
 	x.name = s
