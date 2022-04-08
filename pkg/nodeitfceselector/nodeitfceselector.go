@@ -1,5 +1,6 @@
 package nodeitfceselector
 
+/*
 import "github.com/yndd/ndda-network/pkg/ndda/itfceinfo"
 
 type SelectedNodes struct {
@@ -9,5 +10,5 @@ type SelectedNodes struct {
 type SelectedInterfaces struct {
 	Interfaces map[string]*itfceinfo.ItfceInfo
 }
-
+*/
 

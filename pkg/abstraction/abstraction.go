@@ -6,7 +6,8 @@ import (
 	"sync"
 
 	//"github.com/openconfig/ygot/ygot"
-	"github.com/yndd/ndda-network/pkg/nodeitfceselector"
+
+	"github.com/yndd/ndda-network/pkg/ndda/itfceinfo"
 	nddov1 "github.com/yndd/nddo-runtime/apis/common/v1"
 	"github.com/yndd/nddo-runtime/pkg/resource"
 )
@@ -39,7 +40,7 @@ type Option func(Object)
 type Abstractor interface {
 	//Abstract(ygot.ValidatedGoStruct, ...Option)
 	GetInterfaceName(itfcName string) (string, error)
-	GetSelectedNodeItfces(ctx context.Context, mg resource.Managed, epgSelectors []*nddov1.EpgInfo, nodeItfceSelectors map[string]*nddov1.ItfceInfo) (*nodeitfceselector.SelectedNodes, error)
+	GetDeviceEpgItfces(ctx context.Context, mg resource.Managed, deviceName string, epgSelectors []*nddov1.EpgInfo) (map[string]*itfceinfo.ItfceInfo, error)
 }
 
 func New(c resource.ClientApplicator, name string) *Compositeabstraction {
