@@ -40,7 +40,7 @@ type Option func(Object)
 type Abstractor interface {
 	//Abstract(ygot.ValidatedGoStruct, ...Option)
 	GetInterfaceName(itfcName string) (string, error)
-	GetDeviceEpgItfces(ctx context.Context, mg resource.Managed, deviceName string, epgSelectors []*nddov1.EpgInfo) (map[string]itfceinfo.ItfceInfo, error)
+	GetSelectedItfces(ctx context.Context, mg resource.Managed, deviceName string, epgSelectors []*nddov1.EpgInfo, itfceSelectors map[string]*nddov1.ItfceInfo) (map[string]itfceinfo.ItfceInfo, error)
 }
 
 func New(c resource.ClientApplicator, name string) *Compositeabstraction {
